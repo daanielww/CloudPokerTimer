@@ -1,0 +1,49 @@
+body {
+  font-family: 'Open Sans', sans-serif;
+  font-size: 5vmax;
+  font-weight: 700;
+  background: #000000; 
+  background-size: cover;
+  color: #e0e0e0;
+  margin: auto;
+}
+
+page {
+  display: flex;
+  flex-flow: column nowrap;
+  height: 100vh;
+  background-image: url("../img/BlueStoneBackground-4Kv2.jpg"); 
+  background-size: cover;
+  color: white;
+  justify-content: space-between;
+  align-items: center;
+}
+
+timer {
+  font-family: 'Roboto Mono', monospace;
+  font-size: 35vmax;
+  opacity: .35; 
+  color: #ffffff;
+  padding: 1vmin;
+  line-height: 0px;
+  padding-top: 20vmin;
+}
+
+controls {
+  font-size: 2.5vmax;
+  padding-top: 2.5vmax;
+}
+
+currentBlindsAndAnte {
+  width: 100%;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-around;
+  font-size: 8vmax;
+  text-shadow: .5vmax .5vmax .5vmax black;
+}
+
+.logo {
+  opacity: .75;
+  height: 2vmax;
+}
