@@ -13,6 +13,7 @@ func calculateCurrentGameTime(game) {
 	accumulatePauseDuration := game.accumulatePauseDuration
 	paused := game.Paused
 	gameElapsedTime := (currentTime - startTime)
-	currentLevel := 
+	gameBlindStructure := game.BlindStucture
+	if 
 
 }
