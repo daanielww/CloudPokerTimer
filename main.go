@@ -5,7 +5,14 @@ import (
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"net/http"
 )
+
+type user struct {
+	Email string
+	Username string
+	Password string
+}
 
 type blindStucture struct {
 	Small    int64
@@ -27,6 +34,14 @@ type UserGame struct {
 }
 
 func main() {
+
+	mux := http.NewServeMux()
+
+	// Signup
+	mux.HandleFunc("/registration", handleRegistration)
+	// Login
+	mux.HandleFunc("/login", handleLogin)
+
 	session, err := mgo.Dial("localhost") // connect to server
 	if err != nil {
 		log.Fatal("cannot dial mongo", err)
