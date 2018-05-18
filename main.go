@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"net/http"
 
 	"gopkg.in/mgo.v2"
 )
@@ -29,17 +30,22 @@ type UserGame struct {
 	GameInfo                  blindStructure
 }
 
+type user struct {
+	name string
+	email string
+	password string
+}
+
 func main() {
 	session, err := mgo.Dial("localhost") // connect to server
 	if err != nil {
 		log.Fatal("cannot dial mongo", err)
 	}
 
-	/*
-		r := httprouter.New()
-		r.GET("/", index)
-		http.ListenAndServe("localhost:8080", r)
-	*/
+	fs := http.FileServer(http.Dir("static"))
+	http.Handle("/", fs)
+
+	http.ListenAndServe(":3000", nil)
 
 	defer session.Close() // close the connection when main returns
 
@@ -66,7 +72,7 @@ func main() {
 		AllLevels: []row{row1, row2},
 	}
 
-	user := UserGame{
+	userGame := UserGame{
 
 		Level:                     123,
 		UserID:                    "asdasdasd",
@@ -77,7 +83,7 @@ func main() {
 		GameInfo: bs,
 	}
 
-	err = collection.Insert(user)
+	err = collection.Insert(userGame)
 
 }
 
