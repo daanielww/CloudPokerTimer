@@ -6,7 +6,7 @@ func newTimer() {
 
 }
 
-func calculateCurrentGameTime(game) {
+func getLevelAndLevelTime(game int) (int, int) {
 	startTime := game.Start
 	currentTime := time.Now()
 	currentPauseStartTime := game.currentPauseState
@@ -21,10 +21,16 @@ func calculateCurrentGameTime(game) {
 
 	gameDuration := gameElapsedTime - accumulatePauseDuration
 
-	func main() {  
-		for i := 1; i <= 10; i++ {
-			fmt.Printf(" %d",i)
+	var currentLevel int
+
+	for i := 0; i <= len(); i++ {
+		currentLevel = i;
+		accumulatedLevelTime += gameBlindStructureLevels[i]
+		if accumulatedLevelTime > gameDuration {
+			break
 		}
 	}
+
+	return 
 
 }
