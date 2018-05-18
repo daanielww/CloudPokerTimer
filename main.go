@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"net/http"
 
 	"gopkg.in/mgo.v2"
 )
@@ -35,11 +36,10 @@ func main() {
 		log.Fatal("cannot dial mongo", err)
 	}
 
-	/*
-		r := httprouter.New()
-		r.GET("/", index)
-		http.ListenAndServe("localhost:8080", r)
-	*/
+	fs := http.FileServer(http.Dir("static"))
+	http.Handle("/", fs)
+
+	http.ListenAndServe(":3000", nil)
 
 	defer session.Close() // close the connection when main returns
 
