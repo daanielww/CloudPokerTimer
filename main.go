@@ -2,9 +2,10 @@ package main
 
 import (
 	"log"
+	"net/http"
 
+	"github.com/julienschmidt/httprouter"
 	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
 )
 
 type blindStucture struct {
@@ -17,13 +18,13 @@ type blindStucture struct {
 }
 
 type UserGame struct {
-	ID        bson.ObjectId `bson:"_id,omitempty"`
-	Level     int64
-	UserID    string
-	Start     int64
-	State     bool
-	Remain    int64
-	structure blindStucture
+	Level                     int64
+	UserID                    string
+	StartTime                 int64
+	CurrentPausedTime         int64
+	AccumulatedPausedDuration int64
+	Paused                    bool
+	Structure                 blindStucture
 }
 
 func main() {
@@ -31,6 +32,11 @@ func main() {
 	if err != nil {
 		log.Fatal("cannot dial mongo", err)
 	}
+
+	r := httprouter.New()
+	r.GET("/", index)
+	http.ListenAndServe("localhost:8080", r)
+
 	defer session.Close() // close the connection when main returns
 
 	collection := session.DB("game").C("userGame") //make the collection
@@ -46,14 +52,19 @@ func main() {
 
 	user := UserGame{
 
-		Level:     123,
-		UserID:    "asdasdasd",
-		Start:     2222,
-		State:     true,
-		Remain:    123123,
-		structure: bs,
+		Level:                     123,
+		UserID:                    "asdasdasd",
+		StartTime:                 2222,
+		CurrentPausedTime:         333,
+		AccumulatedPausedDuration: 9229,
+		Paused:    true,
+		Structure: bs,
 	}
 
 	err = collection.Insert(user)
+
+}
+
+func index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 }
