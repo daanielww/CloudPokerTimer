@@ -30,6 +30,12 @@ type UserGame struct {
 	GameInfo                  blindStructure
 }
 
+type user struct {
+	name string
+	email string
+	password string
+}
+
 func main() {
 	session, err := mgo.Dial("localhost") // connect to server
 	if err != nil {
@@ -66,7 +72,7 @@ func main() {
 		AllLevels: []row{row1, row2},
 	}
 
-	user := UserGame{
+	userGame := UserGame{
 
 		Level:                     123,
 		UserID:                    "asdasdasd",
@@ -77,7 +83,7 @@ func main() {
 		GameInfo: bs,
 	}
 
-	err = collection.Insert(user)
+	err = collection.Insert(userGame)
 
 }
 
