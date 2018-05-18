@@ -2,9 +2,7 @@ package main
 
 import (
 	"log"
-	"net/http"
 
-	"github.com/julienschmidt/httprouter"
 	"gopkg.in/mgo.v2"
 )
 
@@ -33,9 +31,11 @@ func main() {
 		log.Fatal("cannot dial mongo", err)
 	}
 
-	r := httprouter.New()
-	r.GET("/", index)
-	http.ListenAndServe("localhost:8080", r)
+	/*
+		r := httprouter.New()
+		r.GET("/", index)
+		http.ListenAndServe("localhost:8080", r)
+	*/
 
 	defer session.Close() // close the connection when main returns
 
@@ -65,6 +65,8 @@ func main() {
 
 }
 
+/*
 func index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 
 }
+*/
