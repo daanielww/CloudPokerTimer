@@ -29,13 +29,23 @@ type row struct {
 }
 
 type UserGame struct {
-	CurrentLevel              int64          `jsons:"CurrentLevel" bson:"CurrentLevel"`
-	UserID                    string         `json:"UserID" bson:"UserID"`
-	StartTime                 int64          `json:"StartTime" bson:"StartTime"`
-	CurrentPausedTime         int64          `json:"CurrentPausedTime" bson:"CurrentPausedTime"`
-	AccumulatedPausedDuration int64          `json:"AccumulatedPausedTime" bson:"AccumulatedPausedTime"`
+	CurrentLevel              int64          `jsons:"CurrentLevel" bson:"CurrentLevel"`	
+	UserID                    string         `json:"UserID" bson:"UserID"`	
+	StartTime                 time.Time      `json:"StartTime" bson:"StartTime"`	
+	CurrentPausedTime         time.Time      `json:"CurrentPausedTime" bson:"CurrentPausedTime"`
+	AccumulatedPausedDuration float64        `json:"AccumulatedPausedTime" bson:"AccumulatedPausedTime"`
 	Paused                    bool           `json:"Paused" bson:"Paused"`
 	GameInfo                  blindStructure `json:"GameInfo" bson:"GameInfo"`
+}
+
+type CurrentGame struct {
+	User                      string  
+	StartTime                 time.Time
+	Paused                    bool
+	CurrentPausedStartTime    time.Time
+	CurrentLevelTime          float64
+	CurrentLevel 	          int
+	GameInfo                  blindStructure
 }
 
 type Email struct {
