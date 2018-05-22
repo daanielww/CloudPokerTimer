@@ -44,8 +44,6 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	u := user{}
 
 	json.NewDecoder(r.Body).Decode(&u)
-	// Grab name
-	email := u.Email
 
 	/*
 		//necessary??
@@ -60,12 +58,18 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	*/
 
 	// composite literal
-	u, err := findUser(email)
+	userCheck, err := findUser(u.Email)
 
 	// Fetch user
 	if err != nil {
 		fmt.Println("Error: user could not be found ", err)
 		http.Error(w, "Error: user could not be found ", 404)
+		return
+	}
+
+	if userCheck.Password != u.Password {
+		fmt.Println("Error: password is not correct ", err)
+		http.Error(w, "Error: password is not correct ", 404)
 		return
 	}
 

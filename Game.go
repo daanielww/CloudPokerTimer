@@ -6,6 +6,8 @@ import (
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"encoding/json"
+	"fmt"
 )
 
 func LoadExistingGame(email string, collection *mgo.Collection) (string, error) {
@@ -23,10 +25,11 @@ func LoadExistingGame(email string, collection *mgo.Collection) (string, error) 
 		return "", errors.New("Could not find game")
 	}
 
-	//    resultString, err := json.Marshal(result)
-	//    if err != nil {
-	// 	   fmt.Printf("Could not marshal to json")
-	//    }
+	resultString, err := json.Marshal(result)
 
-	return string(UserGame), nil
+	if err != nil {
+		fmt.Printf("Could not marshal to json")
+	}
+
+	return string(resultString), nil
 }
