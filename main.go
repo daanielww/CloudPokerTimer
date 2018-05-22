@@ -4,19 +4,16 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gorilla/mux"
-
 	"gopkg.in/mgo.v2"
 )
 
 var db *mgo.Database
 
 type user struct {
-	Email string `json: "email" bson: "email"`
-	Username string `json: "username" bson: "username"`
-	Password string `json: "pass" bson: "pass"`
+	Email    string `json:"email" bson:"email"`
+	Username string `json: "name" bson:"name"`
+	Password string `json: "pass" bson:"pass"`
 }
-
 
 type blindStructure struct {
 	Name      string `json:"Name" bson:"Name"`
@@ -41,20 +38,59 @@ type UserGame struct {
 	GameInfo                  blindStructure `json:"GameInfo" bson:"GameInfo"`
 }
 
-
 func main() {
+
+	mux := http.NewServeMux()
+
 	session, err := mgo.Dial("localhost") // connect to server
 	if err != nil {
 		log.Fatal("cannot dial mongo", err)
 	}
 
+	fs := http.FileServer(http.Dir("static"))
+	http.Handle("/", fs)
+
+	http.ListenAndServe(":3000", nil)
+
 	defer session.Close() // close the connection when main returns
 
-	db = session.DB("game")
+	collection := session.DB("game").C("userGame") //make the collection
 
-	router := mux.NewRouter()
-	router.HandleFunc("/", CreateUser).Methods("GET")
-	router.HandleFunc("/get", GetUser).Methods("GET")
+}
+
+//asdasd
+func CreatePerson(w http.ResponseWriter, req *http.Request) {
+	row1 := row{
+		Small:    10,
+		Big:      11,
+		Ante:     12,
+		Level:    13,
+		Duration: 24,
+	}
+
+	row2 := row{
+		Small:    123,
+		Big:      1202021,
+		Ante:     12132,
+		Level:    12223,
+		Duration: 20,
+	}
+
+	bs := blindStructure{
+		Name:      "Texas holdem",
+		AllLevels: []row{row1, row2},
+	}
+
+	user := UserGame{
+
+		CurrentLevel:              123,
+		UserID:                    "asdasdasd",
+		StartTime:                 2222,
+		CurrentPausedTime:         333,
+		AccumulatedPausedDuration: 9229,
+		Paused:   true,
+		GameInfo: bs,
+	}
 
 	log.Fatal(http.ListenAndServe(":8000", router))
 }
