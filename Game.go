@@ -1,10 +1,11 @@
 package main
 
 import (
-	"encoding/json"
 	"errors"
-	"fmt"
 	"strings"
+
+	"encoding/json"
+	"fmt"
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"

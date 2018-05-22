@@ -5,24 +5,47 @@ import (
 	"fmt"
 	"net/http"
 
+	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/mgo.v2/bson"
 )
+
+type user struct {
+	Email    string  `json: "email" bson: "email"`
+	Username string  `json: "username" bson: "username"`
+	Password string  `json: "pass" bson: "pass"`
+	PHash    *[]byte `json:"-", omitempty`
+}
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	u := user{}
 
 	json.NewDecoder(r.Body).Decode(&u)
+	fmt.Println(u)
 
-	// create bson ID
-	//	u.Id = bson.NewObjectId()
+	if u.isEmpty() {
+		fmt.Println("Error: User is empty")
+		http.Error(w, "Error: please enter user info ", 404)
+		return
+	}
 
-	if _, err := findUser(u.Email); err != nil {
+	_, err := findUser(u.Email)
+
+	if err == nil {
 		fmt.Println("Error: User already exists ", err)
 		http.Error(w, "Error: User already exists ", 404)
-		http.Redirect(w, r, "/get", http.StatusPermanentRedirect)
+		return
 	}
 
 	// store the user in mongodb
+	hash, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.MinCost)
+
+	u.PHash = &hash
+
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
 	db.C("users").Insert(u)
 
 	uj, err := json.Marshal(u)
@@ -34,13 +57,13 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	w.Write(uj)
 	w.WriteHeader(http.StatusCreated) // 201
 	fmt.Fprintf(w, "%s\n", uj)
-	http.Redirect(w, r, "/game", http.StatusPermanentRedirect)
 }
 
 func GetUser(w http.ResponseWriter, r *http.Request) {
-	// Grab name
-	r.ParseForm()
-	email := r.Form.Get("email")
+
+	u := user{}
+
+	json.NewDecoder(r.Body).Decode(&u)
 
 	/*
 		//necessary??
@@ -55,13 +78,21 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	*/
 
 	// composite literal
-	u, err := findUser(email)
+	userCheck, err := findUser(u.Email)
 
 	// Fetch user
 	if err != nil {
 		fmt.Println("Error: user could not be found ", err)
 		http.Error(w, "Error: user could not be found ", 404)
-		http.Redirect(w, r, "/", http.StatusPermanentRedirect)
+		return
+	}
+
+	err = bcrypt.CompareHashAndPassword(*userCheck.PHash, []byte(u.Password))
+
+	if err != nil {
+		fmt.Println("Error: password is not correct ", err)
+		http.Error(w, "Error: password is not correct ", 404)
+		return
 	}
 
 	uj, err := json.Marshal(u)
@@ -76,7 +107,6 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/game", http.StatusPermanentRedirect)
 
 	fmt.Fprintf(w, "%s\n", uj)
-	http.Redirect(w, r, "/game", http.StatusPermanentRedirect)
 }
 
 func findUser(email string) (user, error) {
@@ -88,4 +118,8 @@ func findUser(email string) (user, error) {
 
 	return u, err
 
+}
+
+func (u user) isEmpty() bool {
+	return u.Email == "" || u.Password == "" || u.Username == ""
 }
