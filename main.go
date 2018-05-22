@@ -12,6 +12,13 @@ import (
 
 var db *mgo.Database
 
+type user struct {
+	Email string `json: "email" bson: "email"`
+	Username string `json: "username" bson: "username"`
+	Password string `json: "pass" bson: "pass"`
+}
+
+
 type blindStructure struct {
 	Name      string `json:"Name" bson:"Name"`
 	AllLevels []row  `json:"AllLevels" bson:"AllLevels"`
