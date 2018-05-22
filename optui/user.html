@@ -20,19 +20,19 @@
 				<form>
 					<div class="form-group" v-show="mode=='register'">
 						<label for="name">Name</label>
-						<input type="name" class="form-control" id="name" placeholder="Your Name" v-model="name">
+						<input :required="mode=='register' type="name" class="form-control" id="name" placeholder="Your Name" v-model="name">
 					</div>
 					<div class="form-group">
 						<label for="email">Email address</label>
-						<input type="email" class="form-control" id="email" placeholder="Enter email" v-model="email">
+						<input required type="email" class="form-control" id="email" placeholder="Enter email" v-model="email">
 					</div>
 					<div class="form-group">
 						<label for="password">Password</label>
-						<input type="password" class="form-control" id="password" placeholder="Password" v-model="password">
+						<input required type="password" class="form-control" id="password" placeholder="Password" v-model="password">
 					</div>
-					<div class="form-group" v-show="mode=='register'">
+					<div class="form-group" hhv-show="mode=='register'">
 						<label for="password_verify" >Re-enter Password</label>
-						<input type="password" class="form-control" id="password_verify" placeholder="Re-enter Password" v-model="password_verify">
+						<input :required="mode=='register'" type="password" class="form-control" id="password_verify" placeholder="Re-enter Password" v-model="password_verify">
 					</div>
 					<button type="submit" class="btn btn-primary">{{mode.charAt(0).toUpperCase() + mode.slice(1)}}</button>
 				</form>
