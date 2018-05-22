@@ -41,6 +41,16 @@ type UserGame struct {
 	GameInfo                  blindStructure `json:"GameInfo" bson:"GameInfo"`
 }
 
+type CurrentGame struct {
+	User                      string  
+	StartTime                 int64
+	Paused                    bool
+	CurrentPausedStartTime    int64
+	CurrentLevelTime          int64
+	CurrentLevel 	          int64
+	GameInfo                  blindStructure
+}
+
 
 func main() {
 	session, err := mgo.Dial("localhost") // connect to server
