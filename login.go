@@ -30,7 +30,9 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 	}
 
+
 	w.Header().Set("Content-Type", "application/json")
+	w.Write(uj)
 	w.WriteHeader(http.StatusCreated) // 201
 	fmt.Fprintf(w, "%s\n", uj)
 }
@@ -69,6 +71,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.Write(uj)
 	w.WriteHeader(http.StatusOK) // 200
 	//redirect to game page
 	fmt.Fprintf(w, "%s\n", uj)
