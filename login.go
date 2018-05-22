@@ -40,9 +40,12 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUser(w http.ResponseWriter, r *http.Request) {
+
+	u := user{}
+
+	json.NewDecoder(r.Body).Decode(&u)
 	// Grab name
-	r.ParseForm()
-	email := r.Form.Get("email")
+	email := u.Email
 
 	/*
 		//necessary??
