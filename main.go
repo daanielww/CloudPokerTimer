@@ -1,11 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
-
-	"github.com/gorilla/mux"
 
 	"gopkg.in/mgo.v2"
 )
@@ -13,11 +10,10 @@ import (
 var db *mgo.Database
 
 type user struct {
-	Email string `json: "email" bson: "email"`
-	Username string `json: "username" bson: "username"`
-	Password string `json: "pass" bson: "pass"`
+	Email    string `json:"email" bson:"email"`
+	Username string `json: "name" bson:"name"`
+	Password string `json: "pass" bson:"pass"`
 }
-
 
 type blindStructure struct {
 	Name      string `json:"Name" bson:"Name"`
@@ -42,8 +38,23 @@ type UserGame struct {
 	GameInfo                  blindStructure `json:"GameInfo" bson:"GameInfo"`
 }
 
-//asd
-func GetPerson(w http.ResponseWriter, req *http.Request) {
+func main() {
+
+	mux := http.NewServeMux()
+
+	session, err := mgo.Dial("localhost") // connect to server
+	if err != nil {
+		log.Fatal("cannot dial mongo", err)
+	}
+
+	fs := http.FileServer(http.Dir("static"))
+	http.Handle("/", fs)
+
+	http.ListenAndServe(":3000", nil)
+
+	defer session.Close() // close the connection when main returns
+
+	collection := session.DB("game").C("userGame") //make the collection
 
 }
 
@@ -81,26 +92,8 @@ func CreatePerson(w http.ResponseWriter, req *http.Request) {
 		GameInfo: bs,
 	}
 
-	err := db.C("userGame").Insert(user)
-	if err != nil {
-		log.Fatal("blah", err)
-	}
-	fmt.Fprint(w, "Welcome!\n")
-}
-
-func main() {
-	session, err := mgo.Dial("localhost") // connect to server
-	if err != nil {
-		log.Fatal("cannot dial mongo", err)
-	}
-
-	defer session.Close() // close the connection when main returns
-
-	db = session.DB("game")
-
-	router := mux.NewRouter()
-	router.HandleFunc("/", CreatePerson).Methods("GET")
-	router.HandleFunc("/get", GetPerson).Methods("GET")
+	mainHenry()
+	err = collection.Insert(userGame)
 
 	log.Fatal(http.ListenAndServe(":8000", router))
 }
