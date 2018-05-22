@@ -6,7 +6,15 @@ import (
 	"net/http"
 
 	"gopkg.in/mgo.v2/bson"
+	"golang.org/x/crypto/bcrypt"
 )
+
+type user struct {
+	Email    string `json: "email" bson: "email"`
+	Username string `json: "username" bson: "username"`
+	Password string `json: "pass" bson: "pass"`
+	PHash *[]byte `json:"-", omitempty`
+}
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	u := user{}
@@ -14,8 +22,11 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	json.NewDecoder(r.Body).Decode(&u)
 	fmt.Println(u)
 
-	// create bson ID
-	//	u.Id = bson.NewObjectId()
+	if u.isEmpty() {
+		fmt.Println("Error: User is empty")
+		http.Error(w, "Error: please enter user info ", 404)
+		return
+	}
 
 	_, err := findUser(u.Email)
 
@@ -26,6 +37,15 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// store the user in mongodb
+	hash, err := bcrypt.GenerateFromPassword([]byte(u.Password), bcrypt.MinCost)
+
+	u.PHash = &hash
+
+	if err != nil {
+		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		return
+	}
+
 	db.C("users").Insert(u)
 
 	uj, err := json.Marshal(u)
@@ -67,7 +87,9 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if userCheck.Password != u.Password {
+	err = bcrypt.CompareHashAndPassword(*userCheck.PHash, []byte(u.Password))
+
+	if err != nil {
 		fmt.Println("Error: password is not correct ", err)
 		http.Error(w, "Error: password is not correct ", 404)
 		return
@@ -96,4 +118,8 @@ func findUser(email string) (user, error) {
 
 	return u, err
 
+}
+
+func (u user) isEmpty () bool {
+	return  u.Email == "" || u.Password == "" || u.Username == ""
 }
