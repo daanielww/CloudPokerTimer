@@ -19,7 +19,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	if _, err := findUser(u.Email); err != nil {
 		fmt.Println("Error: User already exists ", err)
 		http.Error(w, "Error: User already exists ", 404)
-		http.Redirect(w, r, "/game", http.StatusPermanentRedirect)
+		http.Redirect(w, r, "/get", http.StatusPermanentRedirect)
 	}
 
 	// store the user in mongodb
@@ -31,8 +31,10 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.Write(uj)
 	w.WriteHeader(http.StatusCreated) // 201
 	fmt.Fprintf(w, "%s\n", uj)
+	http.Redirect(w, r, "/game", http.StatusPermanentRedirect)
 }
 
 func GetUser(w http.ResponseWriter, r *http.Request) {
@@ -59,7 +61,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println("Error: user could not be found ", err)
 		http.Error(w, "Error: user could not be found ", 404)
-		return
+		http.Redirect(w, r, "/", http.StatusPermanentRedirect)
 	}
 
 	uj, err := json.Marshal(u)
@@ -68,11 +70,13 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.Write(uj)
 	w.WriteHeader(http.StatusOK) // 200
 	//redirect to game page
 	http.Redirect(w, r, "/game", http.StatusPermanentRedirect)
 
 	fmt.Fprintf(w, "%s\n", uj)
+	http.Redirect(w, r, "/game", http.StatusPermanentRedirect)
 }
 
 func findUser(email string) (user, error) {
