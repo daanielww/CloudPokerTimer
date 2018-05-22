@@ -7,6 +7,12 @@ import (
 	"gopkg.in/mgo.v2"
 )
 
+type user struct {
+	Email string `json:"email" bson:"email"`
+	Username string `json: "name" bson:"name"`
+	Password string `json: "pass" bson:"pass"`
+}
+
 type blindStructure struct {
 	Name      string
 	AllLevels []row
@@ -37,6 +43,10 @@ type user struct {
 }
 
 func main() {
+
+	mux := http.NewServeMux()
+
+
 	session, err := mgo.Dial("localhost") // connect to server
 	if err != nil {
 		log.Fatal("cannot dial mongo", err)
@@ -50,6 +60,11 @@ func main() {
 	defer session.Close() // close the connection when main returns
 
 	collection := session.DB("game").C("userGame") //make the collection
+
+	uc := NewUserController(session)
+
+	// Login
+	mux.HandleFunc("/login", uc.CreateUser)
 
 	row1 := row{
 		Small:    10,
@@ -86,9 +101,3 @@ func main() {
 	err = collection.Insert(userGame)
 
 }
-
-/*
-func index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-
-}
-*/
