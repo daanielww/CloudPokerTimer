@@ -36,12 +36,6 @@ type UserGame struct {
 	GameInfo                  blindStructure
 }
 
-type user struct {
-	name string
-	email string
-	password string
-}
-
 func main() {
 
 	mux := http.NewServeMux()
