@@ -1,22 +1,14 @@
 package main
 
 import (
-	"gopkg.in/mgo.v2"
 	"net/http"
 	"encoding/json"
 	"fmt"
 	"gopkg.in/mgo.v2/bson"
 )
 
-type UserController struct {
-	session *mgo.Session
-}
 
-func NewUserController(s *mgo.Session) *UserController {
-	return &UserController{s}
-}
-
-func (uc UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
+func CreateUser(w http.ResponseWriter, r *http.Request) {
 	u := user{}
 
 	json.NewDecoder(r.Body).Decode(&u)
@@ -24,14 +16,14 @@ func (uc UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 	// create bson ID
 //	u.Id = bson.NewObjectId()
 
-	if _, err := findUser(uc, u.Email); err != nil {
+	if _, err := findUser(u.Email); err != nil {
 		fmt.Println("Error: User already exists ", err)
 		w.WriteHeader(404)
 		return
 	}
 
 	// store the user in mongodb
-	uc.session.DB("game").C("users").Insert(u)
+	db.C("users").Insert(u)
 
 	uj, err := json.Marshal(u)
 	if err != nil {
@@ -44,7 +36,7 @@ func (uc UserController) CreateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 
-func (uc UserController) GetUser(w http.ResponseWriter, r *http.Request) {
+func GetUser(w http.ResponseWriter, r *http.Request) {
 	// Grab name
 	r.ParseForm()
 	email := r.Form.Get("email")
@@ -62,7 +54,7 @@ func (uc UserController) GetUser(w http.ResponseWriter, r *http.Request) {
 */
 
 	// composite literal
-	u, err := findUser(uc, email)
+	u, err := findUser(email)
 
 	// Fetch user
 	if err != nil {
@@ -82,12 +74,12 @@ func (uc UserController) GetUser(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "%s\n", uj)
 }
 
-func findUser (uc UserController, email string) (user, error) {
+func findUser (email string) (user, error) {
 
 	u := user{}
 
 	// Fetch user
-	err := uc.session.DB("game").C("users").Find(bson.M{"email": email}).One(&u);
+	err := db.C("users").Find(bson.M{"email": email}).One(&u);
 
 	return u, err
 
