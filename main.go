@@ -53,8 +53,8 @@ func main() {
 	db = session.DB("game")
 
 	router := mux.NewRouter()
-	router.HandleFunc("/", CreateUser).Methods("GET")
-	router.HandleFunc("/get", GetUser).Methods("GET")
+	router.HandleFunc("/users", CreateUser).Methods("POST")
+	router.HandleFunc("/login", GetUser).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(":8000", router))
 }
