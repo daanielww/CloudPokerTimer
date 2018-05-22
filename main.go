@@ -5,17 +5,12 @@ import (
 	"net/http"
 
 	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
-	"net/http"
 )
 
 type user struct {
-	Email string
-	Username string
-	Password string
-}
-
-type blindStucture struct {
+	Email string `json:"email" bson:"email"`
+	Username string `json: "name" bson:"name"`
+	Password string `json: "pass" bson:"pass"`
 }
 
 type blindStructure struct {
@@ -45,10 +40,6 @@ func main() {
 
 	mux := http.NewServeMux()
 
-	// Signup
-	mux.HandleFunc("/registration", handleRegistration)
-	// Login
-	mux.HandleFunc("/login", handleLogin)
 
 	session, err := mgo.Dial("localhost") // connect to server
 	if err != nil {
@@ -63,6 +54,11 @@ func main() {
 	defer session.Close() // close the connection when main returns
 
 	collection := session.DB("game").C("userGame") //make the collection
+
+	uc := NewUserController(session)
+
+	// Login
+	mux.HandleFunc("/login", uc.CreateUser)
 
 	row1 := row{
 		Small:    10,
@@ -99,9 +95,3 @@ func main() {
 	err = collection.Insert(user)
 
 }
-
-/*
-func index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-
-}
-*/
