@@ -14,11 +14,6 @@ import (
 
 var db *mgo.Database
 
-type user struct {
-	Email    string `json: "email" bson: "email"`
-	Username string `json: "username" bson: "username"`
-	Password string `json: "pass" bson: "pass"`
-}
 
 type blindStructure struct {
 	Name      string `json:"Name" bson:"Name"`
@@ -140,8 +135,8 @@ func main() {
 	db = session.DB("game")
 
 	router := mux.NewRouter()
-	router.HandleFunc("/", CreateUser).Methods("POST")
-	router.HandleFunc("/login", GetUser).Methods("GET")
+	router.HandleFunc("/users", CreateUser).Methods("POST")
+	router.HandleFunc("/login", GetUser).Methods("POST")
 	router.HandleFunc("/games", games).Methods("POST")
 	router.HandleFunc("/games/{id}", existing).Methods("GET")
 	log.Fatal(http.ListenAndServe(":8000", router))
