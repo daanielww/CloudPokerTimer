@@ -1,0 +1,77 @@
+<!doctype html>
+<html>
+
+<head>
+
+  <meta charset="utf-8">
+  <title>Emailtopia Poker Timer</title>
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700|Roboto+Mono:400,700" rel="stylesheet"> 
+  <link rel="stylesheet" type="text/css" href="css/timer.css">
+  <script src="js/vue.js"></script>
+
+  <script type="text/javascript">
+
+    function startTimer(duration, display) {
+      var start = Date.now(),
+        diff,
+        minutes,
+        seconds;
+      function timer() {
+        // get the number of seconds that have elapsed since 
+        // startTimer() was called
+        diff = duration - (((Date.now() - start) / 1000) | 0);
+
+        // does the same job as parseInt truncates the float
+        minutes = (diff / 60) | 0;
+        seconds = (diff % 60) | 0;
+
+        minutes = minutes < 10 ? minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        display.textContent = minutes + ":" + seconds;
+
+        if (diff <= 0) {
+          // add one second so that the count down starts at the full duration
+          // example 05:00 not 04:59
+          start = Date.now() + 1000;
+        }
+      };
+      // we don't want to wait a full second before the timer starts
+      timer();
+      setInterval(timer, 1000);
+    }
+
+    window.onload = function () {
+      var sevenMinutes = 60 * 7,
+        display = document.querySelector('#time');
+      startTimer(sevenMinutes, display);
+    };
+
+  </script>
+
+</head>
+
+<body>
+  <page>
+
+    <controls>
+      Play/Pause | New Game
+    </controls>
+
+    <timer id="time">
+     
+    </timer>
+
+    <currentBlindsAndAnte>
+      <blinds>Blinds: 25/50</blinds>
+      <ante>Ante: 5</ante>
+    </currentBlindsAndAnte>
+
+    <branding>
+      <img src="img/emailtopia_logo-white-on-transparent.png" class="logo">
+    </branding>
+
+  </page>
+</body>
+
+</html>
