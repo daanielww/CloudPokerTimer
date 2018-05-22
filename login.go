@@ -18,7 +18,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	if _, err := findUser(u.Email); err != nil {
 		fmt.Println("Error: User already exists ", err)
-		w.WriteHeader(404)
+		http.Error(w, "Error: User already exists ", 404)
 		return
 	}
 
@@ -59,7 +59,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	// Fetch user
 	if err != nil {
 		fmt.Println("Error: user could not be found ", err)
-		w.WriteHeader(404)
+		http.Error(w, "Error: user could not be found ", 404)
 		return
 	}
 
