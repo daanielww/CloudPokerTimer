@@ -64,7 +64,7 @@ func main() {
 
 	router := mux.NewRouter()
 	router.HandleFunc("/users", CreateUser).Methods("POST")
-	router.HandleFunc("/login", GetUser).Methods("GET")
+	router.HandleFunc("/login", GetUser).Methods("POST")
 
 	log.Fatal(http.ListenAndServe(":8000", router))
 }
