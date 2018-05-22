@@ -12,11 +12,10 @@ import (
 var db *mgo.Database
 
 type user struct {
-	Email string `json: "email" bson: "email"`
+	Email    string `json: "email" bson: "email"`
 	Username string `json: "username" bson: "username"`
 	Password string `json: "pass" bson: "pass"`
 }
-
 
 type blindStructure struct {
 	Name      string `json:"Name" bson:"Name"`
@@ -41,7 +40,6 @@ type UserGame struct {
 	GameInfo                  blindStructure `json:"GameInfo" bson:"GameInfo"`
 }
 
-
 func main() {
 	session, err := mgo.Dial("localhost") // connect to server
 	if err != nil {
@@ -53,8 +51,8 @@ func main() {
 	db = session.DB("game")
 
 	router := mux.NewRouter()
-	router.HandleFunc("/", CreateUser).Methods("GET")
-	router.HandleFunc("/get", GetUser).Methods("GET")
-
+	router.HandleFunc("/", CreateUser).Methods("POST")
+	router.HandleFunc("/login", GetUser).Methods("GET")
+	router.HandleFunc("/create", CreateGame).Methods("POST")
 	log.Fatal(http.ListenAndServe(":8000", router))
 }
