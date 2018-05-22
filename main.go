@@ -92,8 +92,5 @@ func CreatePerson(w http.ResponseWriter, req *http.Request) {
 		GameInfo: bs,
 	}
 
-	mainHenry()
-	err = collection.Insert(userGame)
-
 	log.Fatal(http.ListenAndServe(":8000", router))
 }
