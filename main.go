@@ -1,50 +1,47 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/mux"
 
 	"gopkg.in/mgo.v2"
 )
 
+var db *mgo.Database
+
 type blindStructure struct {
-	Name      string
-	AllLevels []row
+	Name      string `json:"Name" bson:"Name"`
+	AllLevels []row  `json:"AllLevels" bson:"AllLevels"`
 }
 
 type row struct {
-	Small    int64
-	Big      int64
-	Ante     int64
-	Level    int64
-	Duration int64
+	Small    int64 `json:"Small" bson:"Small"`
+	Big      int64 `json:"Big" bson:"Big"`
+	Ante     int64 `json:"Ante" bson:"Ante"`
+	Level    int64 `json:"Level" bson:"Level"`
+	Duration int64 `json:"Duration" bson:"Duration"`
 }
 
 type UserGame struct {
-	Level                     int64
-	UserID                    string
-	StartTime                 int64
-	CurrentPausedTime         int64
-	AccumulatedPausedDuration int64
-	Paused                    bool
-	GameInfo                  blindStructure
+	CurrentLevel              int64          `json:"CurrentLevel" bson:"CurrentLevel"`
+	UserID                    string         `json:"UserID" bson:"UserID"`
+	StartTime                 int64          `json:"StartTime" bson:"StartTime"`
+	CurrentPausedTime         int64          `json:"CurrentPausedTime" bson:"CurrentPausedTime"`
+	AccumulatedPausedDuration int64          `json:"AccumulatedPausedTime" bson:"AccumulatedPausedTime"`
+	Paused                    bool           `json:"Paused" bson:"Paused"`
+	GameInfo                  blindStructure `json:"GameInfo" bson:"GameInfo"`
 }
 
-func main() {
-	session, err := mgo.Dial("localhost") // connect to server
-	if err != nil {
-		log.Fatal("cannot dial mongo", err)
-	}
+//asd
+func GetPerson(w http.ResponseWriter, req *http.Request) {
 
-	fs := http.FileServer(http.Dir("static"))
-	http.Handle("/", fs)
+}
 
-	http.ListenAndServe(":3000", nil)
-
-	defer session.Close() // close the connection when main returns
-
-	collection := session.DB("game").C("userGame") //make the collection
-
+//asdasd
+func CreatePerson(w http.ResponseWriter, req *http.Request) {
 	row1 := row{
 		Small:    10,
 		Big:      11,
@@ -68,7 +65,7 @@ func main() {
 
 	user := UserGame{
 
-		Level:                     123,
+		CurrentLevel:              123,
 		UserID:                    "asdasdasd",
 		StartTime:                 2222,
 		CurrentPausedTime:         333,
@@ -77,12 +74,26 @@ func main() {
 		GameInfo: bs,
 	}
 
-	err = collection.Insert(user)
-
+	err := db.C("userGame").Insert(user)
+	if err != nil {
+		log.Fatal("blah", err)
+	}
+	fmt.Fprint(w, "Welcome!\n")
 }
 
-/*
-func index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func main() {
+	session, err := mgo.Dial("localhost") // connect to server
+	if err != nil {
+		log.Fatal("cannot dial mongo", err)
+	}
 
+	defer session.Close() // close the connection when main returns
+
+	db = session.DB("game")
+
+	router := mux.NewRouter()
+	router.HandleFunc("/", CreatePerson).Methods("GET")
+	router.HandleFunc("/get", GetPerson).Methods("GET")
+
+	log.Fatal(http.ListenAndServe(":8000", router))
 }
-*/
