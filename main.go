@@ -1,6 +1,7 @@
 package main
 
 import (
+	"html/template"
 	"log"
 	"net/http"
 	"time"
@@ -24,23 +25,24 @@ type blindStructure struct {
 }
 
 type row struct {
-	Small    int64 `json:"Small" bson:"Small"`
-	Big      int64 `json:"Big" bson:"Big"`
-	Ante     int64 `json:"Ante" bson:"Ante"`
-	Level    int64 `json:"Level" bson:"Level"`
-	Duration int64 `json:"Duration" bson:"Duration"`
+	Level      int64 `json:"level" bson:"level"`
+	SmallBlind int64 `json:"smallBlind" bson:"smallBlind"`
+	BigBlind   int64 `json:"bigBlind" bson:"bigBlind"`
+	Ante       int64 `json:"ante" bson:"ante"`
+	Duration   int64 `json:"duration" bson:"duration"`
 }
 
 type UserGame struct {
-	CurrentLevel              int64          `jsons:"CurrentLevel" bson:"CurrentLevel"`
-	UserID                    string         `json:"UserID" bson:"UserID"`
-	StartTime                 time.Time      `json:"StartTime" bson:"StartTime"`
-	CurrentPausedTime         time.Time      `json:"CurrentPausedTime" bson:"CurrentPausedTime"`
-	AccumulatedPausedDuration float64        `json:"AccumulatedPausedTime" bson:"AccumulatedPausedTime"`
-	CurrentPausedStartTime    time.Time      `json:"CurrentPausedStartTime" bson:"CurrentPausedStartTime"`
-	CurrentLevelTime          float64        `json:"CurrentLevelTime" bson:"CurrentLevelTime"`
-	Paused                    bool           `json:"Paused" bson:"Paused"`
-	GameInfo                  blindStructure `json:"GameInfo" bson:"GameInfo"`
+	User                      string    `json:"User" bson:"User"`
+	StartTime                 time.Time `json:"startTime" bson:"startTime"`
+	Paused                    bool      `json:"paused" bson:"paused"`
+	CurrentPausedStartTime    time.Time `json:"currentPausedStartTime" bson:"currentPausedStartTime"`
+	CurrentLevelTime          float64   `json:"currentLevelTime" bson:"currentLevelTime"`
+	CurrentLevel              int64     `jsons:"currentLevel" bson:"currentLevel"`
+	BlindScheduleName         string    `jsons:"blindScheduleName" bson:"blindScheduleName"`
+	Levels                    []row     `json:"levels" bson:"levels"`
+	CurrentPausedTime         time.Time `json:"CurrentPausedTime" bson:"CurrentPausedTime"`
+	AccumulatedPausedDuration float64   `json:"AccumulatedPausedTime" bson:"AccumulatedPausedTime"`
 }
 
 type CurrentGame struct {
@@ -51,6 +53,16 @@ type CurrentGame struct {
 	CurrentLevelTime       float64
 	CurrentLevel           int
 	GameInfo               blindStructure
+}
+
+var tpl *template.Template
+
+func init() {
+	tpl = template.Must(template.ParseFiles("optui/public/timer.html"))
+}
+
+func index(res http.ResponseWriter, req *http.Request) {
+	tpl.ExecuteTemplate(res, "timer.html", nil)
 }
 
 func main() {
@@ -66,7 +78,7 @@ func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/users", CreateUser).Methods("POST")
 	router.HandleFunc("/login", GetUser).Methods("POST")
-	router.HandleFunc("/games", games).Methods("POST")
+	router.HandleFunc("/games", games).Methods("GET")
 	router.HandleFunc("/games/{id}", existing).Methods("GET")
 	//testing button click action 2 cases pause and play
 	router.HandleFunc("/games/{id}/pause", func(w http.ResponseWriter, r *http.Request) {
@@ -75,6 +87,8 @@ func main() {
 	router.HandleFunc("/games/{id}/play", func(w http.ResponseWriter, r *http.Request) {
 		updateGamePauseState(false, getEmail(r))
 	}).Methods("PUT")
+
+	router.HandleFunc("/main", index).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(":8000", router))
 }

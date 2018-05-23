@@ -92,28 +92,32 @@ func games(w http.ResponseWriter, r *http.Request) {
 	}
 
 	row1 := row{
-		Small:    1,
-		Big:      2,
-		Ante:     123,
-		Level:    2222,
-		Duration: 123123,
+		SmallBlind: 5,
+		BigBlind:   10,
+		Ante:       0,
+		Level:      1,
+		Duration:   11,
 	}
 
-	bs := blindStructure{
-		Name:      "asd",
-		AllLevels: []row{row1},
+	row2 := row{
+		SmallBlind: 10,
+		BigBlind:   20,
+		Ante:       0,
+		Level:      2,
+		Duration:   12,
 	}
 
 	userGame := UserGame{
-		CurrentLevel:              12312,
-		UserID:                    "Sammmmmmmmmmmmmmmmmmmy",
+		User:                      "Sam",
 		StartTime:                 time.Now(),
-		CurrentPausedTime:         time.Now(),
-		AccumulatedPausedDuration: 1213,
+		Paused:                    false,
 		CurrentPausedStartTime:    time.Now(),
 		CurrentLevelTime:          555,
-		Paused:                    true,
-		GameInfo:                  bs,
+		CurrentLevel:              6,
+		BlindScheduleName:         "Office Turbo",
+		Levels:                    []row{row1, row2},
+		CurrentPausedTime:         time.Now(),
+		AccumulatedPausedDuration: 1213,
 	}
 
 	db.C("gameInfo").Insert(userGame)
@@ -135,7 +139,7 @@ func existing(w http.ResponseWriter, r *http.Request) {
 
 	game := UserGame{}
 
-	err := db.C("gameInfo").Find(bson.M{"UserID": email}).One(&game)
+	err := db.C("gameInfo").Find(bson.M{"User": email}).One(&game)
 	if err != nil {
 		http.Error(w, "Error: game doesn't exist ", 404)
 		return
@@ -163,5 +167,5 @@ func update(w http.ResponseWriter, r *http.Request) {
 		os.Exit(1)
 	}
 
-	db.C("gameInfo").Update(bson.M{"UserID": game.UserID}, bson.M{"$set": bson.M{"Paused": u.Status}})
+	db.C("gameInfo").Update(bson.M{"User": game.User}, bson.M{"$set": bson.M{"Paused": u.Status}})
 }
