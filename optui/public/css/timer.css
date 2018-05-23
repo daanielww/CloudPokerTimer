@@ -65,3 +65,17 @@ currentBlindsAndAnte {
   transform: translate(-50%, -50%);
   visibility: hidden;
 }
+
+#gamePausedOverlay {
+  background-color: red;
+  font-size: 8vh;
+  color: white;
+  font-weight: 700;
+  text-align: center;
+  position: absolute;
+  z-index:200;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  visibility: hidden;
+}
