@@ -16,7 +16,7 @@ type user struct {
 	PHash    *[]byte `json:"-", omitempty`
 }
 
-func CreateUser(w http.ResponseWriter, r *http.Request) {
+func createUser(w http.ResponseWriter, r *http.Request) {
 	u := user{}
 
 	json.NewDecoder(r.Body).Decode(&u)

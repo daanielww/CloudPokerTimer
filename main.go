@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gorilla/mux"
 	"gopkg.in/mgo.v2"
@@ -13,7 +14,6 @@ import (
 )
 
 var db *mgo.Database
-
 
 type blindStructure struct {
 	Name      string `json:"Name" bson:"Name"`
@@ -29,9 +29,9 @@ type row struct {
 }
 
 type UserGame struct {
-	CurrentLevel              int64          `jsons:"CurrentLevel" bson:"CurrentLevel"`	
-	UserID                    string         `json:"UserID" bson:"UserID"`	
-	StartTime                 time.Time      `json:"StartTime" bson:"StartTime"`	
+	CurrentLevel              int64          `jsons:"CurrentLevel" bson:"CurrentLevel"`
+	UserID                    string         `json:"UserID" bson:"UserID"`
+	StartTime                 time.Time      `json:"StartTime" bson:"StartTime"`
 	CurrentPausedTime         time.Time      `json:"CurrentPausedTime" bson:"CurrentPausedTime"`
 	AccumulatedPausedDuration float64        `json:"AccumulatedPausedTime" bson:"AccumulatedPausedTime"`
 	Paused                    bool           `json:"Paused" bson:"Paused"`
@@ -39,13 +39,13 @@ type UserGame struct {
 }
 
 type CurrentGame struct {
-	User                      string  
-	StartTime                 time.Time
-	Paused                    bool
-	CurrentPausedStartTime    time.Time
-	CurrentLevelTime          float64
-	CurrentLevel 	          int
-	GameInfo                  blindStructure
+	User                   string
+	StartTime              time.Time
+	Paused                 bool
+	CurrentPausedStartTime time.Time
+	CurrentLevelTime       float64
+	CurrentLevel           int
+	GameInfo               blindStructure
 }
 
 type Email struct {
@@ -90,13 +90,12 @@ func games(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userGame := UserGame{
-		CurrentLevel:              12312,
-		UserID:                    "Sammmmmmmmmmmmmmmmmmmy",
-		StartTime:                 2231,
-		CurrentPausedTime:         12123,
-		AccumulatedPausedDuration: 1213,
-		Paused:   true,
-		GameInfo: bs,
+		CurrentLevel:      12312,
+		UserID:            "Sammmmmmmmmmmmmmmmmmmy",
+		StartTime:         time.Now(),
+		CurrentPausedTime: time.Now(),
+		Paused:            false,
+		GameInfo:          bs,
 	}
 
 	db.C("gameInfo").Insert(userGame)
@@ -145,9 +144,23 @@ func main() {
 	db = session.DB("game")
 
 	router := mux.NewRouter()
-	router.HandleFunc("/users", CreateUser).Methods("POST")
+	router.HandleFunc("/users", createUser).Methods("POST")
 	router.HandleFunc("/login", GetUser).Methods("POST")
 	router.HandleFunc("/games", games).Methods("POST")
 	router.HandleFunc("/games/{id}", existing).Methods("GET")
+	//testing button click action 2 cases pause and play
+	router.HandleFunc("/games/{id}/pause", func(w http.ResponseWriter, r *http.Request) {
+		updateGamePauseState(true, getEmail(r))
+	}).Methods("PUT")
+	router.HandleFunc("/games/{id}/play", func(w http.ResponseWriter, r *http.Request) {
+		updateGamePauseState(false, getEmail(r))
+	}).Methods("PUT")
+
 	log.Fatal(http.ListenAndServe(":8000", router))
+}
+
+// function to return the email value given from the query parameters
+func getEmail(r *http.Request) string {
+	vars := mux.Vars(r)
+	return vars["id"]
 }

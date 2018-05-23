@@ -107,6 +107,32 @@
 
     } // end of StartTimer
 
+  //ajax call generic
+    function ajaxCall(method,url) {
+      $.ajax({
+           url: url,
+           error: function(xhr, statusText, err) {
+             response = "error"+xhr.status;
+             return response;
+           },
+
+           success: function(data) {
+            return data;
+           },
+           type: method
+        });
+    }
+    
+    // pause button clicked (clock stop not added)
+    function pauseClick() {
+      result = ajaxCall('PUT','/games/{id}/pause');
+    }
+
+  // play button clicked (clock stop not added)
+    function playClick() {
+      result = ajaxCall('PUT','/games/{id}/play');
+    }
+
     function getNextLevelTime() {
       currentLevel++;
       if (currentLevel > currentGame.levels.length) {
