@@ -9,13 +9,6 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-type user struct {
-	Email    string  `json: "email" bson: "email"`
-	Username string  `json: "username" bson: "username"`
-	Password string  `json: "pass" bson: "pass"`
-	PHash    *[]byte `json:"-", omitempty`
-}
-
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	u := user{}
 
