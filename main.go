@@ -43,6 +43,16 @@ type UserGame struct {
 	GameInfo                  blindStructure `json:"GameInfo" bson:"GameInfo"`
 }
 
+type CurrentGame struct {
+	User                   string
+	StartTime              time.Time
+	Paused                 bool
+	CurrentPausedStartTime time.Time
+	CurrentLevelTime       float64
+	CurrentLevel           int
+	GameInfo               blindStructure
+}
+
 func main() {
 	session, err := mgo.Dial("localhost") // connect to server
 	if err != nil {
@@ -54,9 +64,17 @@ func main() {
 	db = session.DB("game")
 
 	router := mux.NewRouter()
-	router.HandleFunc("/", CreateUser).Methods("POST")
-	router.HandleFunc("/login", GetUser).Methods("GET")
+	router.HandleFunc("/users", CreateUser).Methods("POST")
+	router.HandleFunc("/login", GetUser).Methods("POST")
 	router.HandleFunc("/games", games).Methods("POST")
 	router.HandleFunc("/games/{id}", existing).Methods("GET")
+	//testing button click action 2 cases pause and play
+	router.HandleFunc("/games/{id}/pause", func(w http.ResponseWriter, r *http.Request) {
+		updateGamePauseState(true, getEmail(r))
+	}).Methods("PUT")
+	router.HandleFunc("/games/{id}/play", func(w http.ResponseWriter, r *http.Request) {
+		updateGamePauseState(false, getEmail(r))
+	}).Methods("PUT")
+
 	log.Fatal(http.ListenAndServe(":8000", router))
 }
