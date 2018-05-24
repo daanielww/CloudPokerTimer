@@ -12,7 +12,8 @@
 
   <script type="text/javascript">
 
-    var currentGame = getGameData();
+    var currentGamePromise = getGameData();
+    var currentGame = {};
     var timerDisplay = document.querySelector('#time');
 
     var currentLevel,
@@ -46,14 +47,14 @@
       });
     }
 
-    // assign game values to vars
-    var currentLevel = currentGame.currentLevel;
-    var currentLevelTime = currentGame.currentLevelTime;
-    var currentSmallBlind = currentGame.levels[currentLevel - 1].smallBlind;
-    var currentBigBlind = currentGame.levels[currentLevel - 1].bigBlind;
-    var currentAnte = currentGame.levels[currentLevel - 1].ante;
-    var isPaused = currentGame.paused;
-    var timerDisplay = document.querySelector('#time');
+    // // assign game values to vars
+    // var currentLevel = currentGame.currentLevel;
+    // var currentLevelTime = currentGame.currentLevelTime;
+    // var currentSmallBlind = currentGame.levels[currentLevel - 1].smallBlind;
+    // var currentBigBlind = currentGame.levels[currentLevel - 1].bigBlind;
+    // var currentAnte = currentGame.levels[currentLevel - 1].ante;
+    // var isPaused = currentGame.paused;
+    // var timerDisplay = document.querySelector('#time');
 
 
     // currentGame = {
@@ -179,7 +180,7 @@
     window.onload = function () {
 
       // var currentGame = getData(); // get the json data using the rest call in getData
-      getGameData.then(setupGameVariables);
+      currentGamePromise.then(setupGameVariables);
       displayInfo(); //display the blinds,ante, and level
 
       if (isPaused == true) {
