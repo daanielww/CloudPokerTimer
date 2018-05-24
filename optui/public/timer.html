@@ -26,10 +26,15 @@
     // set up game variables after ajax call has finished
     function setupGameVariables() {
       currentLevel = currentGame.CurrentLevel;
+      currentLevel = 2;
+
       currentLevelTime = currentGame.currentLevelTime;
       currentSmallBlind = currentGame.levels[currentLevel - 1].smallBlind;
+      console.log("Small Blind: ", currentSmallBlind);
       currentBigBlind = currentGame.levels[currentLevel - 1].bigBlind;
+        console.log("Big Blind: ", currentBigBlind);
       currentAnte = currentGame.levels[currentLevel - 1].ante;
+        console.log("Ante: ", currentAnte);
       isPaused = currentGame.paused;
       timerDisplay = document.querySelector('#timer');
     }
