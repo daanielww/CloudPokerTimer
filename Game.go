@@ -148,7 +148,7 @@ func update(w http.ResponseWriter, r *http.Request) {
 
 func makeDummyData() UserGame {
 
-	smallBlindArray := []int64{5, 10, 25, 75, 100, 150, 200, 300, 400, 500, 700, 1000, 1500, 2000, 3000}
+	smallBlindArray := []int64{5, 10, 25, 50, 75, 100, 150, 200, 300, 400, 500, 700, 1000, 1500, 2000, 3000, }
 	bigBlindArray := []int64{10, 20, 50, 100, 150, 200, 300, 400, 600, 800, 1000, 1400, 2000, 3000, 4000, 6000}
 	anteArray := []int64{0, 0, 5, 10, 10, 25, 25, 25, 50, 50, 100, 100, 200, 300, 400, 600}
 	rows := []row{}
