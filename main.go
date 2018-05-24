@@ -56,6 +56,7 @@ type CurrentGame struct {
 }
 
 var tpl *template.Template
+var router *mux.Router
 
 func init() {
 	tpl = template.Must(template.ParseFiles("optui/public/timer.html"))
@@ -75,7 +76,7 @@ func main() {
 
 	db = session.DB("game")
 
-	router := mux.NewRouter()
+	router = mux.NewRouter()
 	router.HandleFunc("/users", CreateUser).Methods("POST")
 	router.HandleFunc("/login", GetUser).Methods("POST")
 	router.HandleFunc("/games", games).Methods("GET")
@@ -90,5 +91,17 @@ func main() {
 
 	router.HandleFunc("/main", index).Methods("GET")
 
-	log.Fatal(http.ListenAndServe(":8000", router))
+	router.PathPrefix("/css/").Handler(
+		http.StripPrefix("/css", http.FileServer(http.Dir("./optui/public/css/"))))
+
+	router.PathPrefix("/img/").Handler(
+		http.StripPrefix("/img", http.FileServer(http.Dir("./optui/public/img/"))))
+
+	router.PathPrefix("/js/").Handler(
+		http.StripPrefix("/js", http.FileServer(http.Dir("./optui/public/js/"))))
+
+	router.PathPrefix("/sounds/").Handler(
+		http.StripPrefix("/sounds", http.FileServer(http.Dir("./optui/public/sounds/"))))
+
+	log.Fatal(http.ListenAndServe(":3000", router))
 }
