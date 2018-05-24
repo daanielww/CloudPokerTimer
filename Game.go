@@ -150,20 +150,18 @@ func makeDummyData() UserGame {
 
 	smallBlindArray := []int64{5, 10, 25, 75, 100, 150, 200, 300, 400, 500, 700, 1000, 1500, 2000, 3000}
 	bigBlindArray := []int64{10, 20, 50, 100, 150, 200, 300, 400, 600, 800, 1000, 1400, 2000, 3000, 4000, 6000}
-	anteArray := []int64{0,0,5,10,10,25,25,25,50,50,100,100,200,300,400,600}
+	anteArray := []int64{0, 0, 5, 10, 10, 25, 25, 25, 50, 50, 100, 100, 200, 300, 400, 600}
 	rows := []row{}
 	rowOb := row{}
 
-
-
 	for i := 0; i < len(smallBlindArray); i++ {
 
-		rowOb = row {
-			SmallBlind:		smallBlindArray[i],
-			BigBlind:		bigBlindArray[i],
-			Ante:			anteArray[i],
-			Level:			int64(i + 1),
-			Duration:		int64(7),
+		rowOb = row{
+			SmallBlind: smallBlindArray[i],
+			BigBlind:   bigBlindArray[i],
+			Ante:       anteArray[i],
+			Level:      int64(i + 1),
+			Duration:   int64(420),
 		}
 
 		rows = append(rows, rowOb)
@@ -174,7 +172,7 @@ func makeDummyData() UserGame {
 		StartTime:                 time.Now(),
 		Paused:                    false,
 		CurrentPausedStartTime:    time.Now(),
-		CurrentLevelTime:          555,
+		CurrentLevelTime:          30,
 		CurrentLevel:              1,
 		BlindScheduleName:         "Office Turbo",
 		Levels:                    rows,
