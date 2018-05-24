@@ -81,7 +81,8 @@ func games(w http.ResponseWriter, r *http.Request) {
 
 	err := db.C("gameInfo").Find(bson.M{"UserID": email}).One(&game)
 
-	fmt.Println(err == nil)
+
+	fmt.Println("Games: " , err == nil)
 
 	if err == nil {
 		err := db.C("gameInfo").Remove(bson.M{"UserID": email})
@@ -139,6 +140,8 @@ func existing(w http.ResponseWriter, r *http.Request) {
 
 	game := UserGame{}
 
+	fmt.Println("InExisting: ")
+
 	err := db.C("gameInfo").Find(bson.M{"User": email}).One(&game)
 	if err != nil {
 		http.Error(w, "Error: game doesn't exist ", 404)
@@ -151,8 +154,9 @@ func existing(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	w.Write(uj)
-	w.WriteHeader(http.StatusCreated)
+
 }
 
 func update(w http.ResponseWriter, r *http.Request) {
