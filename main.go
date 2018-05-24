@@ -94,7 +94,7 @@ func main() {
 	}).Methods("PUT")
 
 	router.HandleFunc("/main", index).Methods("GET")
-	router.HandleFunc("/login", login).Methods("GET")
+	router.HandleFunc("/", login).Methods("GET")
 
 	router.PathPrefix("/css/").Handler(
 		http.StripPrefix("/css", http.FileServer(http.Dir("./optui/public/css/"))))
