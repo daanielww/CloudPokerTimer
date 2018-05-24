@@ -103,5 +103,6 @@ func main() {
 	router.PathPrefix("/sounds/").Handler(
 		http.StripPrefix("/sounds", http.FileServer(http.Dir("./optui/public/sounds/"))))
 
+	//http.Handle("/favicon.ico", http.NotFoundHandler())
 	log.Fatal(http.ListenAndServe(":3000", router))
 }
