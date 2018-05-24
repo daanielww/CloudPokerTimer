@@ -18,8 +18,7 @@
 
     var currentGamePromise = getGameData();
     var currentGame = {};
-
-    var timerDisplay = document.querySelector('#time');
+    var timerDisplay;
 
     var currentLevel,
       currentLevelTime,
@@ -36,15 +35,19 @@
       currentBigBlind = currentGame.levels[currentLevel - 1].bigBlind;
       currentAnte = currentGame.levels[currentLevel - 1].ante;
       isPaused = currentGame.paused;
+      timerDisplay = document.querySelector('#timer');
     }
 
     function getGameData() {
       return $.ajax({
         url: "games/Sam", async: true, cache: false, success: function (result) {
-          currentGame = JSON.parse(result);
+            console.log("Current Game populated " , result);
+            currentGame = result;
+
         },
         error: function (xhr, status, error) {
           $(function () {
+            console.log("Error occured: ", currentGame)
             $("#dataErrorOverlay").show();
             $("page").css({ 'filter': 'blur(4px)' });
           });
@@ -221,7 +224,7 @@
     </controls>
 
     <timer id="time">
-
+        
     </timer>
 
     <currentBlindsAndAnte>
