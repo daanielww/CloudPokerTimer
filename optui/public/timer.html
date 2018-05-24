@@ -40,6 +40,8 @@
         },
         error: function (xhr, status, error) {
           $(function () {
+            console.log("error reading data");
+            $("#dataErrorOverlay").show();
             $("page").css({ 'filter': 'blur(4px)' });
           });
         }
@@ -103,16 +105,6 @@
     } // end of StartTimer
 
 
-    // pause button clicked (clock stop not added)
-    function pauseClick() {
-      result = ajaxCall('PUT', '/games/{id}/pause');
-    }
-
-    // play button clicked (clock stop not added)
-    function playClick() {
-      result = ajaxCall('PUT', '/games/{id}/play');
-    }
-
     function getNextLevelTime() {
       currentLevel++;
       if (currentLevel > currentGame.levels.length) {
@@ -146,7 +138,7 @@
                 timerDisplay.textContent = minutes + ":" + seconds;
 
                 // display a PAUSED overlay on screen
-                document.getElementById("gamePausedOverlay").style.visibility = "visible";
+                $("#gamePausedOverlay").show();
             } else {
                 startTimer(currentLevelTime, timerDisplay);
             }
