@@ -14,7 +14,7 @@
 
     var currentGamePromise = getGameData();
     var currentGame = {};
-    var timerDisplay;
+    var timerDisplay = {};
 
     var currentLevel,
       currentLevelTime,
@@ -25,7 +25,7 @@
 
     // set up game variables after ajax call has finished
     function setupGameVariables() {
-      currentLevel = currentGame.currentLevel;
+      currentLevel = currentGame.CurrentLevel;
       currentLevelTime = currentGame.currentLevelTime;
       currentSmallBlind = currentGame.levels[currentLevel - 1].smallBlind;
       currentBigBlind = currentGame.levels[currentLevel - 1].bigBlind;
