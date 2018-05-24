@@ -59,10 +59,14 @@ var tpl *template.Template
 var router *mux.Router
 
 func init() {
-	tpl = template.Must(template.ParseFiles("optui/public/timer.html"))
+	tpl = template.Must(template.New("random").Delims("[[", "]]").ParseGlob("optui/public/*.html"))
 }
 
-func index(res http.ResponseWriter, req *http.Request) {
+func login(res http.ResponseWriter, _ *http.Request) {
+	tpl.ExecuteTemplate(res, "user.html", nil)
+}
+
+func index(res http.ResponseWriter, _ *http.Request) {
 	tpl.ExecuteTemplate(res, "timer.html", nil)
 }
 
@@ -90,6 +94,7 @@ func main() {
 	}).Methods("PUT")
 
 	router.HandleFunc("/main", index).Methods("GET")
+	router.HandleFunc("/login", login).Methods("GET")
 
 	router.PathPrefix("/css/").Handler(
 		http.StripPrefix("/css", http.FileServer(http.Dir("./optui/public/css/"))))
