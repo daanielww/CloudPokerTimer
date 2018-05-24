@@ -12,10 +12,6 @@
 
   <script type="text/javascript">
 
-
-    var currentGame;
-    getGameData();
-
     var currentGamePromise = getGameData();
     var currentGame = {};
     var timerDisplay = {};
@@ -30,7 +26,6 @@
     // set up game variables after ajax call has finished
     function setupGameVariables() {
       currentLevel = currentGame.CurrentLevel;
-      currentLevel = 2;
 
       currentLevelTime = currentGame.currentLevelTime;
       currentSmallBlind = currentGame.levels[currentLevel - 1].smallBlind;
@@ -45,7 +40,7 @@
 
     function getGameData() {
       return $.ajax({
-        url: "games/Sam", async: true, cache: false, success: function (result) {
+        url: "games/Sam", cache: false, success: function (result) {
             console.log("Current Game populated " , result);
             currentGame = result;
 
@@ -53,7 +48,7 @@
         error: function (xhr, status, error) {
           $(function () {
             console.log("Error occured: ", currentGame)
-            $("#dataErrorOverlay").show();
+            //$("#dataErrorOverlay").show();
             $("page").css({ 'filter': 'blur(4px)' });
           });
         }
@@ -193,9 +188,17 @@
     window.onload = function () {
 
       // var currentGame = getData(); // get the json data using the rest call in getData
-      currentGamePromise.then(setupGameVariables);
+        
+    getGameData();
+    setupGameVariables();    
+      
+        
+    console.log("Small Blind: ", currentSmallBlind);
+        
       displayInfo(); //display the blinds,ante, and level
 
+   
+        
       if (isPaused == true) {
         // display the timer in its paused state
         // does the same job as parseInt truncates the float
@@ -229,7 +232,7 @@
     </controls>
 
     <timer id="time">
-        
+
     </timer>
 
     <currentBlindsAndAnte>
