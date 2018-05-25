@@ -57,7 +57,7 @@
 
 var createCookie = function(name, value, minutes) {
     var expires;
-    if (days) {
+    if (minutes) {
         var date = new Date();
         date.setTime(date.getTime() + (minutes * 60 * 1000));
         expires = "; expires=" + date.toGMTString();
@@ -123,8 +123,8 @@ var app = new Vue({
 					  
 					  // if OK
 					  
-					  createCookie("user", this.email, 120);
-					  document.location = "/";
+					  createCookie("user", this.email);
+					  document.location = "/main";
 					  
 					  //later, combine login and timer pages with vue
 					})
@@ -136,13 +136,15 @@ var app = new Vue({
 				else if (this.mode == "register") {
 					if (!this.registrationFormIsValid()) return false;
 					
-					axios.post('/users', {"name": this.name, "email": this.email, "password": this.password})
+					console.log({"username": this.name, "email": this.email, "password": this.password})
+
+					axios.post('/users', {"username": this.name, "email": this.email, "password": this.password})
 					.then(response => {
 					  // JSON responses are automatically parsed.
 					  
 					  // if OK
 					  
-					  createCookie("user", this.email, 60);
+					  createCookie("user", this.email);
 					  document.location = "/main";
 					  
 					  //later, combine login and timer pages with vue
