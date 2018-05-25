@@ -11,7 +11,6 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
   <script type="text/javascript">
-    var id = 'Sam';
     var currentGame = {};
     var timerDisplay;
     var currInterval;
@@ -197,8 +196,8 @@
         this.ws.addEventListener('message', function (e) {
           var msg = JSON.parse(e.data);
           console.log('msg.email = ' + msg.email);
-          console.log('this mail = ' + id);
-          if (msg.email == id) {
+          console.log('this mail = ' + user);
+          if (msg.email == user) {
             if (msg.message == 'pause') {
               this.paused = true;
               clearInterval(currInterval);
@@ -222,7 +221,7 @@
         send: function () {
           this.ws.send(
             JSON.stringify({
-              email: id,
+              email: user,
               message: this.isPaused()
             }
             ));
