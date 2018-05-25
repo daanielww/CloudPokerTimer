@@ -75,7 +75,7 @@
         return $.ajax({
           url: "games/" + user + "/play/" + currentLevel + "/" + currentLevelTime, method: "PUT", cache: false, success: function () {
             isPaused = false;
-            window.location.reload(true);
+            vm.send();
           },
           error: function (xhr, status, error) {
             console.log("Error playing game: ", error)
@@ -84,6 +84,35 @@
 
       }
 
+    };
+
+
+    document.onmousedown = function () {
+      if (!isPaused) {
+        return $.ajax({
+          url: "games/" + user + "/pause/" + currentLevel + "/" + currentLevelTime, method: "PUT", cache: false, success: function () {
+            window.clearInterval(currInterval);
+            // display a PAUSED overlay on screen
+            document.getElementById("gamePausedOverlay").style.visibility = "visible";
+            isPaused = true;
+            vm.send();
+          },
+          error: function (xhr, status, error) {
+            console.log("Error pausing game: ", error)
+          }
+        });
+      }
+      else {
+        return $.ajax({
+          url: "games/" + user + "/play/" + currentLevel + "/" + currentLevelTime, method: "PUT", cache: false, success: function () {
+            isPaused = false;
+            vm.send();
+          },
+          error: function (xhr, status, error) {
+            console.log("Error playing game: ", error)
+          }
+        })
+      }
     };
 
 
