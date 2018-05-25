@@ -54,11 +54,51 @@ func getEmail(r *http.Request) string {
 }
 
 // function to trigger pause and play action
-func updateGamePauseState(newGameState bool, userID string) {
+func updateGamePauseState(w http.ResponseWriter, newGameState bool, r *http.Request) {
+	fmt.Println("working")
+	vars := mux.Vars(r)
+	email := vars["id"]
+	level := vars["level"]
+	levelTime := vars["levelTime"]
+
+	update := bson.M{"User": email}
+
+	if newGameState == false {
+		change := bson.M{"$set": bson.M{"Paused": newGameState}}
+		err := db.C("gameInfo").Update(update, change)
+		if err != nil {
+			log.Fatal("Pause Update Error: ", err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+	} else {
+		fmt.Println(email)
+		fmt.Println(level)
+		fmt.Println(levelTime)
+		new_level, _ := strconv.ParseInt(level, 10, 64)
+		new_levelTime, _ := strconv.ParseInt(levelTime, 10, 64)
+		change := bson.M{"$set": bson.M{"Paused": newGameState, "currentPausedTime": time.Now(), "currentLevel": new_level, "currentLevelTime": new_levelTime}}
+		err := db.C("gameInfo").Update(update, change)
+		if err != nil {
+			log.Fatal("Pause Update Error: ", err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
+/*
+
 	var result UserGame // used to store the usergame return data from mongo
 	// Update where
-	update := bson.M{"UserID": userID}
-	db.C("gameInfo").Find(bson.M{"UserID": userID}).One(&result)
+	update := bson.M{"User": userID}
+	db.C("gameInfo").Find(bson.M{"User": userID}).One(&result)
+
+
+
 	if newGameState == false {
 		// if false, set pause as false and calculate the cumulative paused time in nanoseconds.
 		// value to be set along with pause bool
@@ -67,13 +107,20 @@ func updateGamePauseState(newGameState bool, userID string) {
 		err := db.C("gameInfo").Update(update, change)
 		if err != nil {
 			log.Fatal("Pause Update Error: ", err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
 		}
+		w.WriteHeader(http.StatusOK)
 	} else {
 		// if pause is false then set pause as true and current pause time as the current time
-		change := bson.M{"$set": bson.M{"Paused": newGameState, "CurrentPausedTime": time.Now()}}
+		change := bson.M{"$set": bson.M{"Paused": newGameState, "CurrentPausedTime": time.Now(), "CurrentLevel": }}
 		err := db.C("gameInfo").Update(update, change)
 		if err != nil {
 			log.Fatal("Pause Update Error: ", err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
 		}
+
+		w.WriteHeader(http.StatusOK)
 	}
-}
+*/

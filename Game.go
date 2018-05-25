@@ -69,13 +69,17 @@ func LoadExistingGame(email string, collection *mgo.Collection) (string, error) 
 
 func games(w http.ResponseWriter, r *http.Request) {
 
-	u := Email{}
+	fmt.Println("qqqqqq")
+
+	/*u := Email{}
 
 	json.NewDecoder(r.Body).Decode(&u)
 
 	email := u.Email
 
-	fmt.Println(email)
+	fmt.Println(email) */
+
+	email := "Sam"
 
 	game := UserGame{}
 
@@ -91,8 +95,6 @@ func games(w http.ResponseWriter, r *http.Request) {
 
 	userGame := makeDummyData()
 
-	fmt.Println(userGame.User)
-
 	db.C("gameInfo").Insert(userGame)
 
 	uj, error := json.Marshal(userGame)
@@ -100,11 +102,11 @@ func games(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(error)
 	}
 
+	fmt.Println("Asdasdasdasdasd")
+
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(uj)
 	w.WriteHeader(http.StatusCreated) // 201
-
-	fmt.Println("Asdasdasdasdasd")
 
 }
 
@@ -149,7 +151,7 @@ func update(w http.ResponseWriter, r *http.Request) {
 
 func makeDummyData() UserGame {
 
-	smallBlindArray := []int64{5, 10, 25, 75, 100, 150, 200, 300, 400, 500, 700, 1000, 1500, 2000, 3000}
+	smallBlindArray := []int64{5, 10, 25, 50, 75, 100, 150, 200, 300, 400, 500, 700, 1000, 1500, 2000, 3000}
 	bigBlindArray := []int64{10, 20, 50, 100, 150, 200, 300, 400, 600, 800, 1000, 1400, 2000, 3000, 4000, 6000}
 	anteArray := []int64{0, 0, 5, 10, 10, 25, 25, 25, 50, 50, 100, 100, 200, 300, 400, 600}
 	rows := []row{}
@@ -162,7 +164,7 @@ func makeDummyData() UserGame {
 			BigBlind:   bigBlindArray[i],
 			Ante:       anteArray[i],
 			Level:      int64(i + 1),
-			Duration:   int64(7),
+			Duration:   int64(420),
 		}
 
 		rows = append(rows, rowOb)
@@ -173,7 +175,7 @@ func makeDummyData() UserGame {
 		StartTime:                 time.Now(),
 		Paused:                    false,
 		CurrentPausedStartTime:    time.Now(),
-		CurrentLevelTime:          555,
+		CurrentLevelTime:          420,
 		CurrentLevel:              1,
 		BlindScheduleName:         "Office Turbo",
 		Levels:                    rows,

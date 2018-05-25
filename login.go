@@ -12,6 +12,8 @@ import (
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	//tp2.ExecuteTemplate(w, "user.html", nil)
 
+	fmt.Println("yyyyy")
+
 	u := user{}
 
 	json.NewDecoder(r.Body).Decode(&u)

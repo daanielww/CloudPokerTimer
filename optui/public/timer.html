@@ -14,6 +14,7 @@
 
     var currentGame = {};
     var timerDisplay;
+    var currInterval;
 
     var currentLevel,
       currentLevelTime,
@@ -37,14 +38,47 @@
       return $.ajax({
         url: "games/Sam", cache: false, success: function (result) {
             currentGame = result;
+            console.log(currentGame);
         },
         error: function (xhr, status, error) {
           $(function () {
+            console.log("error reading data");
+            $("#dataErrorOverlay").show();
             $("page").css({ 'filter': 'blur(4px)' });
           });
         }
       });
     }
+
+    document.onkeydown = function () {
+        if(!isPaused) {
+            return $.ajax({
+                url: "games/Sam/pause/"+currentLevel + "/" + currentLevelTime, method: "PUT", cache: false, success: function () {
+                    window.clearInterval(currInterval);
+                    // display a PAUSED overlay on screen
+                    document.getElementById("gamePausedOverlay").style.visibility = "visible";
+                    isPaused = true;
+                },
+                error: function (xhr, status, error) {
+                    console.log("Error pausing game: ", error)
+                }
+            });
+        }
+        else {
+            return $.ajax({
+                url: "games/Sam/play/"+currentLevel + "/" + currentLevelTime, method: "PUT", cache: false, success: function () {
+                    isPaused = false;
+                    window.location.reload(true);
+                },
+                error: function(xhr, status, error) {
+                    console.log("Error playing game: ", error)
+                }
+            })
+
+        }
+
+    };
+
 
     function startTimer(duration) {
       var start = performance.now(),
@@ -60,7 +94,8 @@
         // get the number of seconds that have elapsed since 
         // startTimer() was called
         diff = duration - (((performance.now() - start) / 1000) | 0);
-
+        currentLevelTime = duration - (((performance.now() - start) / 1000) | 0);
+        
         // does the same job as parseInt truncates the float
         minutes = (diff / 60) | 0;
         seconds = (diff % 60) | 0;
@@ -70,13 +105,6 @@
 
         timerDisplay.textContent = minutes + ":" + seconds;
 
-        document.addEventListener("keypress", function () {
-          clearInterval(currInterval);
-          document.addEventListener("keypress", function () {
-            window.location.reload(true);
-          })
-
-        });
 
         if (diff < 6) {
           countDownSound.play();
@@ -98,20 +126,10 @@
         }
       };
 
-      var currInterval = setInterval(timer, 1000);
+      currInterval = setInterval(timer, 1000);
 
     } // end of StartTimer
 
-
-    // pause button clicked (clock stop not added)
-    function pauseClick() {
-      result = ajaxCall('PUT', '/games/{id}/pause');
-    }
-
-    // play button clicked (clock stop not added)
-    function playClick() {
-      result = ajaxCall('PUT', '/games/{id}/play');
-    }
 
     function getNextLevelTime() {
       currentLevel++;
@@ -146,7 +164,7 @@
                 timerDisplay.textContent = minutes + ":" + seconds;
 
                 // display a PAUSED overlay on screen
-                document.getElementById("gamePausedOverlay").style.visibility = "visible";
+                $("#gamePausedOverlay").show();
             } else {
                 startTimer(currentLevelTime, timerDisplay);
             }
