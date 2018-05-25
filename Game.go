@@ -81,8 +81,6 @@ func games(w http.ResponseWriter, r *http.Request) {
 
 	err := db.C("gameInfo").Find(bson.M{"UserID": email}).One(&game)
 
-	fmt.Println("Games: ", err == nil)
-
 	if err == nil {
 		err := db.C("gameInfo").Remove(bson.M{"UserID": email})
 		if err != nil {
@@ -92,6 +90,8 @@ func games(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userGame := makeDummyData()
+
+	fmt.Println(userGame.User)
 
 	db.C("gameInfo").Insert(userGame)
 
@@ -104,15 +104,16 @@ func games(w http.ResponseWriter, r *http.Request) {
 	w.Write(uj)
 	w.WriteHeader(http.StatusCreated) // 201
 
+	fmt.Println("Asdasdasdasdasd")
+
 }
 
 func existing(w http.ResponseWriter, r *http.Request) {
+
 	vars := mux.Vars(r)
 	email := vars["id"]
 
 	game := UserGame{}
-
-	fmt.Println("InExisting: ")
 
 	err := db.C("gameInfo").Find(bson.M{"User": email}).One(&game)
 	if err != nil {
@@ -150,20 +151,18 @@ func makeDummyData() UserGame {
 
 	smallBlindArray := []int64{5, 10, 25, 75, 100, 150, 200, 300, 400, 500, 700, 1000, 1500, 2000, 3000}
 	bigBlindArray := []int64{10, 20, 50, 100, 150, 200, 300, 400, 600, 800, 1000, 1400, 2000, 3000, 4000, 6000}
-	anteArray := []int64{0,0,5,10,10,25,25,25,50,50,100,100,200,300,400,600}
+	anteArray := []int64{0, 0, 5, 10, 10, 25, 25, 25, 50, 50, 100, 100, 200, 300, 400, 600}
 	rows := []row{}
 	rowOb := row{}
 
-
-
 	for i := 0; i < len(smallBlindArray); i++ {
 
-		rowOb = row {
-			SmallBlind:		smallBlindArray[i],
-			BigBlind:		bigBlindArray[i],
-			Ante:			anteArray[i],
-			Level:			int64(i + 1),
-			Duration:		int64(7),
+		rowOb = row{
+			SmallBlind: smallBlindArray[i],
+			BigBlind:   bigBlindArray[i],
+			Ante:       anteArray[i],
+			Level:      int64(i + 1),
+			Duration:   int64(7),
 		}
 
 		rows = append(rows, rowOb)

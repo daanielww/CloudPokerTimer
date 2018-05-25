@@ -10,6 +10,8 @@ import (
 )
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
+	//tp2.ExecuteTemplate(w, "user.html", nil)
+
 	u := user{}
 
 	json.NewDecoder(r.Body).Decode(&u)
@@ -50,6 +52,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	w.Write(uj)
 	w.WriteHeader(http.StatusCreated) // 201
 	fmt.Fprintf(w, "%s\n", uj)
+
 }
 
 func GetUser(w http.ResponseWriter, r *http.Request) {

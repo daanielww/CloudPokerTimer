@@ -66,8 +66,8 @@ func login(res http.ResponseWriter, _ *http.Request) {
 	tpl.ExecuteTemplate(res, "user.html", nil)
 }
 
-func index(res http.ResponseWriter, _ *http.Request) {
-	tpl.ExecuteTemplate(res, "timer.html", nil)
+func index(w http.ResponseWriter, r *http.Request) {
+	tpl.ExecuteTemplate(w, "timer.html", nil)
 }
 
 func main() {
@@ -94,7 +94,7 @@ func main() {
 	}).Methods("PUT")
 
 	router.HandleFunc("/main", index).Methods("GET")
-	router.HandleFunc("/login", login).Methods("GET")
+	router.HandleFunc("/", login).Methods("GET")
 
 	router.PathPrefix("/css/").Handler(
 		http.StripPrefix("/css", http.FileServer(http.Dir("./optui/public/css/"))))
@@ -108,6 +108,6 @@ func main() {
 	router.PathPrefix("/sounds/").Handler(
 		http.StripPrefix("/sounds", http.FileServer(http.Dir("./optui/public/sounds/"))))
 
-	//http.Handle("/favicon.ico", http.NotFoundHandler())
+	http.Handle("/favicon.ico", http.NotFoundHandler())
 	log.Fatal(http.ListenAndServe(":3000", router))
 }
