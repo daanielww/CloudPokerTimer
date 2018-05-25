@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 
 	"golang.org/x/crypto/bcrypt"
 	"gopkg.in/mgo.v2/bson"
@@ -11,8 +12,6 @@ import (
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	//tp2.ExecuteTemplate(w, "user.html", nil)
-
-	fmt.Println("yyyyy")
 
 	u := user{}
 
@@ -45,16 +44,23 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	db.C("users").Insert(u)
 
-	uj, err := json.Marshal(u)
-	if err != nil {
-		fmt.Println(err)
+	email := u.Email
+	fmt.Println(email)
+	game := UserGame{}
+
+	err2 := db.C("gameInfo").Find(bson.M{"User": email}).One(&game)
+
+	if err2 == nil {
+		err2 := db.C("gameInfo").Remove(bson.M{"UserID": email})
+		if err2 != nil {
+			fmt.Printf("remove fail %v\n", err)
+			os.Exit(1)
+		}
 	}
 
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(uj)
-	w.WriteHeader(http.StatusCreated) // 201
-	fmt.Fprintf(w, "%s\n", uj)
+	userGame := makeDummyData(email)
 
+	db.C("gameInfo").Insert(userGame)
 }
 
 func GetUser(w http.ResponseWriter, r *http.Request) {

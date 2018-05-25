@@ -59,12 +59,11 @@ var tpl *template.Template
 var router *mux.Router
 
 func init() {
-	tpl = template.Must(template.New("random").Delims("[[", "]]").ParseGlob("optui/public/*.html"))
+	tpl = template.Must(template.New("random").Delims("&&&", "&&&").ParseGlob("optui/public/*.html"))
 }
 
 func login(res http.ResponseWriter, _ *http.Request) {
-
-	tpl.ExecuteTemplate(res, "user.html", nil)
+	tpl.ExecuteTemplate(res, "index.html", nil)
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
@@ -84,7 +83,7 @@ func main() {
 	router = mux.NewRouter()
 	router.HandleFunc("/users", CreateUser).Methods("POST")
 	router.HandleFunc("/login", GetUser).Methods("POST")
-	router.HandleFunc("/games", games).Methods("GET")
+	//router.HandleFunc("/create/{id}", games).Methods("POST")
 	router.HandleFunc("/games/{id}", existing).Methods("GET")
 	//testing button click action 2 cases pause and play
 	router.HandleFunc("/games/{id}/pause/{level}/{levelTime}", func(w http.ResponseWriter, r *http.Request) {

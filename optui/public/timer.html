@@ -1,213 +1,220 @@
 <!doctype html>
 <html>
 
-<head>
+    <head>
 
-  <meta charset="utf-8">
-  <title>Emailtopia Poker Timer</title>
-  <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700|Roboto+Mono:400,700" rel="stylesheet">
-  <link rel="stylesheet" type="text/css" href="css/timer.css">
-  <script src="js/vue.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <meta charset="utf-8">
+        <title>Emailtopia Poker Timer</title>
+        <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,700|Roboto+Mono:400,700" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="css/timer.css">
+        <script src="js/vue.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
-  <script type="text/javascript">
+        <script type="text/javascript">
 
-    var currentGame = {};
-    var timerDisplay;
-    var currInterval;
+            var currentGame = {};
+            var timerDisplay;
+            var currInterval;
+            var user = getCookie("email");
 
-    var currentLevel,
-      currentLevelTime,
-      currentSmallBlind,
-      currentBigBlind,
-      currentAnte,
-      isPaused;
+            var currentLevel,
+                currentLevelTime,
+                currentSmallBlind,
+                currentBigBlind,
+                currentAnte,
+                isPaused;
 
-    // set up game variables after ajax call has finished
-    function setupGameVariables() {
-      currentLevel = currentGame.CurrentLevel;
-      currentLevelTime = currentGame.currentLevelTime;
-      currentSmallBlind = currentGame.levels[currentLevel - 1].smallBlind;
-      currentBigBlind = currentGame.levels[currentLevel - 1].bigBlind;
-      currentAnte = currentGame.levels[currentLevel - 1].ante;
-      isPaused = currentGame.paused;
-      timerDisplay = document.querySelector('#time');
-    }
-
-    function getGameData() {
-      return $.ajax({
-        url: "games/Sam", cache: false, success: function (result) {
-            currentGame = result;
-            console.log(currentGame);
-        },
-        error: function (xhr, status, error) {
-          $(function () {
-            console.log("error reading data");
-            $("#dataErrorOverlay").show();
-            $("page").css({ 'filter': 'blur(4px)' });
-          });
-        }
-      });
-    }
-
-    document.onkeydown = function () {
-        if(!isPaused) {
-            return $.ajax({
-                url: "games/Sam/pause/"+currentLevel + "/" + currentLevelTime, method: "PUT", cache: false, success: function () {
-                    window.clearInterval(currInterval);
-                    // display a PAUSED overlay on screen
-                    document.getElementById("gamePausedOverlay").style.visibility = "visible";
-                    isPaused = true;
-                },
-                error: function (xhr, status, error) {
-                    console.log("Error pausing game: ", error)
-                }
-            });
-        }
-        else {
-            return $.ajax({
-                url: "games/Sam/play/"+currentLevel + "/" + currentLevelTime, method: "PUT", cache: false, success: function () {
-                    isPaused = false;
-                    window.location.reload(true);
-                },
-                error: function(xhr, status, error) {
-                    console.log("Error playing game: ", error)
-                }
-            })
-
-        }
-
-    };
-
-
-    function startTimer(duration) {
-      var start = performance.now(),
-        diff,
-        minutes,
-        seconds;
-
-      var countDownSound = new Audio('sounds/Robot_blip-Marianne_Gagnon-120342607.mp3');
-      var levelStartSound = new Audio('sounds/Censored_Beep-569981218.mp3');
-
-      duration += 1; // add one second so that the count down starts at the full duration
-      function timer() {
-        // get the number of seconds that have elapsed since 
-        // startTimer() was called
-        diff = duration - (((performance.now() - start) / 1000) | 0);
-        currentLevelTime = duration - (((performance.now() - start) / 1000) | 0);
-        
-        // does the same job as parseInt truncates the float
-        minutes = (diff / 60) | 0;
-        seconds = (diff % 60) | 0;
-
-        minutes = minutes < 10 ? minutes : minutes;
-        seconds = seconds < 10 ? "0" + seconds : seconds;
-
-        timerDisplay.textContent = minutes + ":" + seconds;
-
-
-        if (diff < 6) {
-          countDownSound.play();
-        }
-
-        if (diff <= 1) {
-          start = performance.now();
-          duration = getNextLevelTime();
-          if (duration == "GameOver") {
-            clearInterval(currInterval);
-            document.querySelector('#time').textContent = "DONE";
-          } else {
-            currentSmallBlind = currentGame.levels[currentLevel - 1].smallBlind;
-            currentBigBlind = currentGame.levels[currentLevel - 1].bigBlind;
-            currentAnte = currentGame.levels[currentLevel - 1].ante;
-            displayInfo();
-            levelStartSound.play();
-          }
-        }
-      };
-
-      currInterval = setInterval(timer, 1000);
-
-    } // end of StartTimer
-
-
-    function getNextLevelTime() {
-      currentLevel++;
-      if (currentLevel > currentGame.levels.length) {
-        return "GameOver";
-      }
-      return currentGame.levels[currentLevel - 1].duration;
-    }
-
-    function displayInfo() {
-      var blindsDisplay = document.querySelector('#blindValues'),
-        anteDisplay = document.querySelector('#anteValue'),
-        levelDisplay = document.querySelector('#level');
-
-      blindsDisplay.textContent = currentSmallBlind + "/" + currentBigBlind;
-      anteDisplay.textContent = currentAnte;
-      levelDisplay.textContent = currentLevel;
-
-    }
-
-    window.onload = function () {
-        
-    getGameData().then(setupGameVariables).then(displayInfo).then( function() {
-
-            if (isPaused == true) {
-                // display the timer in its paused state
-                // does the same job as parseInt truncates the float
-                minutes = (currentLevelTime / 60) | 0;
-                seconds = (currentLevelTime % 60) | 0;
-                minutes = minutes < 10 ? minutes : minutes;
-                seconds = seconds < 10 ? "0" + seconds : seconds;
-                timerDisplay.textContent = minutes + ":" + seconds;
-
-                // display a PAUSED overlay on screen
-                $("#gamePausedOverlay").show();
-            } else {
-                startTimer(currentLevelTime, timerDisplay);
+            // set up game variables after ajax call has finished
+            function setupGameVariables() {
+                currentLevel = currentGame.CurrentLevel;
+                currentLevelTime = currentGame.currentLevelTime;
+                currentSmallBlind = currentGame.levels[currentLevel - 1].smallBlind;
+                currentBigBlind = currentGame.levels[currentLevel - 1].bigBlind;
+                currentAnte = currentGame.levels[currentLevel - 1].ante;
+                isPaused = currentGame.paused;
+                timerDisplay = document.querySelector('#time');
             }
-        })
-    };
 
-  </script>
+            function getGameData() {
+                return $.ajax({
+                    url: "games/" + user, cache: false, success: function (result) {
+                        currentGame = result;
+                        console.log(currentGame);
+                    },
+                    error: function (xhr, status, error) {
+                        $(function () {
+                            console.log("error reading data");
+                            $("#dataErrorOverlay").show();
+                            $("page").css({ 'filter': 'blur(4px)' });
+                        });
+                    }
+                });
+            }
 
-</head>
+            function getCookie(name) {
+                var value = "; " + document.cookie;
+                var parts = value.split("; " + name + "=");
+                if (parts.length == 2) return parts.pop().split(";").shift();
+            }
 
-<body>
-  <page>
+            document.onkeydown = function () {
+                if(!isPaused) {
+                    return $.ajax({
+                        url: "games/" + user + "/pause/"+currentLevel + "/" + currentLevelTime, method: "PUT", cache: false, success: function () {
+                            window.clearInterval(currInterval);
+                            // display a PAUSED overlay on screen
+                            document.getElementById("gamePausedOverlay").style.visibility = "visible";
+                            isPaused = true;
+                        },
+                        error: function (xhr, status, error) {
+                            console.log("Error pausing game: ", error)
+                        }
+                    });
+                }
+                else {
+                    return $.ajax({
+                        url: "games/" + user + "/play/"+currentLevel + "/" + currentLevelTime, method: "PUT", cache: false, success: function () {
+                            isPaused = false;
+                            window.location.reload(true);
+                        },
+                        error: function(xhr, status, error) {
+                            console.log("Error playing game: ", error)
+                        }
+                    })
 
-    <controls>
-      <div>Level:
-        <span id="level"></span>
-      </div>
-      <div>
-        New Game
-      </div>
-    </controls>
+                }
 
-    <timer id="time">
+            };
 
-    </timer>
 
-    <currentBlindsAndAnte>
-      <blinds>Blinds:
-        <span id="blindValues"></span>
-      </blinds>
-      <ante>Ante:
-        <span id="anteValue"></span>
-      </ante>
-    </currentBlindsAndAnte>
+            function startTimer(duration) {
+                var start = performance.now(),
+                    diff,
+                    minutes,
+                    seconds;
 
-    <branding>
-      <img src="img/emailtopia_logo-white-on-transparent.png" class="logo">
-    </branding>
+                var countDownSound = new Audio('sounds/Robot_blip-Marianne_Gagnon-120342607.mp3');
+                var levelStartSound = new Audio('sounds/Censored_Beep-569981218.mp3');
 
-    <div id="gamePausedOverlay">PAUSED</div>
-    <div id="dataErrorOverlay">Error Loading</div>
+                duration += 1; // add one second so that the count down starts at the full duration
+                function timer() {
+                    // get the number of seconds that have elapsed since 
+                    // startTimer() was called
+                    diff = duration - (((performance.now() - start) / 1000) | 0);
+                    currentLevelTime = duration - (((performance.now() - start) / 1000) | 0);
 
-  </page>
-</body>
+                    // does the same job as parseInt truncates the float
+                    minutes = (diff / 60) | 0;
+                    seconds = (diff % 60) | 0;
+
+                    minutes = minutes < 10 ? minutes : minutes;
+                    seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                    timerDisplay.textContent = minutes + ":" + seconds;
+
+
+                    if (diff < 6) {
+                        countDownSound.play();
+                    }
+
+                    if (diff <= 1) {
+                        start = performance.now();
+                        duration = getNextLevelTime();
+                        if (duration == "GameOver") {
+                            clearInterval(currInterval);
+                            document.querySelector('#time').textContent = "DONE";
+                        } else {
+                            currentSmallBlind = currentGame.levels[currentLevel - 1].smallBlind;
+                            currentBigBlind = currentGame.levels[currentLevel - 1].bigBlind;
+                            currentAnte = currentGame.levels[currentLevel - 1].ante;
+                            displayInfo();
+                            levelStartSound.play();
+                        }
+                    }
+                };
+
+                currInterval = setInterval(timer, 1000);
+
+            } // end of StartTimer
+
+
+            function getNextLevelTime() {
+                currentLevel++;
+                if (currentLevel > currentGame.levels.length) {
+                    return "GameOver";
+                }
+                return currentGame.levels[currentLevel - 1].duration;
+            }
+
+            function displayInfo() {
+                var blindsDisplay = document.querySelector('#blindValues'),
+                    anteDisplay = document.querySelector('#anteValue'),
+                    levelDisplay = document.querySelector('#level');
+
+                blindsDisplay.textContent = currentSmallBlind + "/" + currentBigBlind;
+                anteDisplay.textContent = currentAnte;
+                levelDisplay.textContent = currentLevel;
+
+            }
+
+            window.onload = function () {
+
+                getGameData().then(setupGameVariables).then(displayInfo).then( function() {
+
+                    if (isPaused == true) {
+                        // display the timer in its paused state
+                        // does the same job as parseInt truncates the float
+                        minutes = (currentLevelTime / 60) | 0;
+                        seconds = (currentLevelTime % 60) | 0;
+                        minutes = minutes < 10 ? minutes : minutes;
+                        seconds = seconds < 10 ? "0" + seconds : seconds;
+                        timerDisplay.textContent = minutes + ":" + seconds;
+
+                        // display a PAUSED overlay on screen
+                        $("#gamePausedOverlay").show();
+                    } else {
+                        startTimer(currentLevelTime, timerDisplay);
+                    }
+                })
+            };
+
+        </script>
+
+    </head>
+
+    <body>
+        <page>
+
+            <controls>
+                <div>Level:
+                    <span id="level"></span>
+                </div>
+                <div>
+                    New Game
+                </div>
+            </controls>
+
+            <timer id="time">
+
+            </timer>
+
+            <currentBlindsAndAnte>
+                <blinds>Blinds:
+                    <span id="blindValues"></span>
+                </blinds>
+                <ante>Ante:
+                    <span id="anteValue"></span>
+                </ante>
+            </currentBlindsAndAnte>
+
+            <branding>
+                <img src="img/emailtopia_logo-white-on-transparent.png" class="logo">
+            </branding>
+
+            <div id="gamePausedOverlay">PAUSED</div>
+            <div id="dataErrorOverlay">Error Loading</div>
+
+        </page>
+    </body>
 
 </html>
