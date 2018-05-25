@@ -81,6 +81,11 @@ func main() {
 	db = session.DB("game")
 
 	router = mux.NewRouter()
+	// Configure websocket route
+	router.HandleFunc("/ws", handleConnections)
+
+	// Start listening for incoming chat messages
+
 	router.HandleFunc("/users", CreateUser).Methods("POST")
 	router.HandleFunc("/login", GetUser).Methods("POST")
 	router.HandleFunc("/games", games).Methods("GET")
@@ -107,7 +112,8 @@ func main() {
 
 	router.PathPrefix("/sounds/").Handler(
 		http.StripPrefix("/sounds", http.FileServer(http.Dir("./optui/public/sounds/"))))
-
-	//http.Handle("/favicon.ico", http.NotFoundHandler())
+	// routine to control the messages in web socket
+	go handleMessages()
 	log.Fatal(http.ListenAndServe(":3000", router))
+
 }
