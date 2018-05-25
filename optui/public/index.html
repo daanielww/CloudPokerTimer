@@ -1,0 +1,165 @@
+<html>
+<head>
+	<script src="js/vue.js"></script>
+	<script src="js/axios.min.js"></script>
+	<link rel="stylesheet" href="css/bootstrap.css" />
+</head>
+
+<body>
+	<div class="container" id="app">
+		<div v-show="mode=='register'">
+			<h1>Register</h1>
+			<p><a href v-on:click.prevent="mode='login';errors=[]">I have an account</a></p>
+		</div>
+		<div v-show="mode=='login'">
+			<h1>Login</h1> 
+			<p><a href v-on:click.prevent="mode='register';errors=[]">Create an account</a></p>
+		</div>
+
+		<div class="row">
+			<div class="col-6">
+				<p v-if="errors.length">
+					<ul>
+						<li v-for="error in errors">{{error}}</li>
+					</ul>
+				</p>
+				<form>
+					<div class="form-group" v-show="mode=='register'">
+						<label for="name_field">Name</label>
+						<input :required="mode=='register'" class="form-control" id="name_field" placeholder="Your Name" v-model="name">
+					</div>
+					<div class="form-group">
+						<label for="email">Email address</label>
+						<input required type="email" class="form-control" id="email_field" placeholder="Enter email" v-model="email">
+					</div>
+					<div class="form-group">
+						<label for="password_field">Password</label>
+						<input required type="password" class="form-control" id="password_field" placeholder="Password" v-model="password">
+					</div>
+					<div class="form-group" v-show="mode=='register'">
+						<label for="password_verify_field" >Re-enter Password</label>
+						<input :required="mode=='register'" type="password" class="form-control" 
+							id="password_verify_field" placeholder="Re-enter Password" v-model="password_verify">
+					</div>
+					<button type="button" v-on:click="loginOrRegister()"
+						class="btn btn-primary"
+					> 
+					 {{mode.charAt(0).toUpperCase() + mode.slice(1)}}
+					</button> &nbsp; &nbsp; <span v-if="errors.length"> See errors above</span>
+				</form>
+				
+				
+			 </div>			
+		</div>	
+	</div>
+</body>
+<script>
+
+var createCookie = function(name, value, minutes) {
+    var expires;
+    if (minutes) {
+        var date = new Date();
+        date.setTime(date.getTime() + (minutes * 60 * 1000));
+        expires = "; expires=" + date.toGMTString();
+    }
+    else {
+        expires = "";
+    }
+    document.cookie = name + "=" + value + expires + "; path=/";
+}
+
+var app = new Vue({
+	el: '#app',
+	data: {
+		mode: 'login',
+		name: '',
+		email: '',
+		password: '',
+		password_verify: '',
+		errors: []
+	},
+	computed: { 
+		
+	},
+	methods: {
+		validateEmail(email) {
+    		var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    		return re.test(String(email).toLowerCase());
+		},
+		loginFormIsValid() {
+			this.errors = [];
+			if (!this.validateEmail(this.email)) {
+				this.errors.push("Invalid email address.");
+			}
+			if (!this.password) {
+				this.errors.push("Password must be specified.");
+			}
+			return (this.errors.length == 0);
+		},
+		registrationFormIsValid() {
+			this.errors = [];
+			if (!this.validateEmail(this.email)) {
+				this.errors.push("Invalid email address.");
+			}
+			if (!this.password) {
+				this.errors.push("Password must be specified.");
+			}
+			if (this.password && this.password.length < 7) {
+				this.errors.push("Password must have 7 characters or more.");
+			}
+			if (this.password && this. password_verify && this.password != this.password_verify) {
+				this.errors.push("Passwords don't match.");
+			}
+			return (this.errors.length == 0);
+		},
+		loginOrRegister() {
+				if (this.mode == "login") {
+					if (!this.loginFormIsValid()) return false;
+			
+				
+					axios.post('/login', {"email": this.email, "password": this.password})
+					.then(response => {
+					  // JSON responses are automatically parsed.
+					  
+					  // if OK
+					  
+					  createCookie("user", this.email);
+					  document.location = "/main";
+					  
+					  //later, combine login and timer pages with vue
+					})
+					.catch(e => {
+					  console.log("error", e);
+					  this.errors.push(e.response.statusText);
+					});
+				}
+				else if (this.mode == "register") {
+					if (!this.registrationFormIsValid()) return false;
+					
+					console.log({"username": this.name, "email": this.email, "password": this.password})
+
+					axios.post('/users', {"username": this.name, "email": this.email, "password": this.password})
+					.then(response => {
+					  // JSON responses are automatically parsed.
+					  
+					  // if OK
+					  
+					  createCookie("user", this.email);
+					  document.location = "/main";
+					  
+					  //later, combine login and timer pages with vue
+					  
+					  
+					})
+					.catch(e => {
+					  console.log("error", e);
+					  this.errors.push(e.response.statusText);
+					});					
+					
+				} 
+		}
+		
+	}		
+});
+</script>
+</html>

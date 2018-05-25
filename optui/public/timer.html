@@ -15,6 +15,8 @@
     var currentGame = {};
     var timerDisplay;
     var currInterval;
+    var user = getCookie("user");
+
     var currentLevel,
       currentLevelTime,
       currentSmallBlind,
@@ -35,8 +37,9 @@
 
     function getGameData() {
       return $.ajax({
-        url: "games/Sam", cache: false, success: function (result) {
+        url: "games/" + user, cache: false, success: function (result) {
           currentGame = result;
+          console.log(currentGame);
         },
         error: function (xhr, status, error) {
           $(function () {
@@ -47,6 +50,43 @@
         }
       });
     }
+
+    function getCookie(name) {
+      var value = "; " + document.cookie;
+      var parts = value.split("; " + name + "=");
+      if (parts.length == 2) return parts.pop().split(";").shift();
+    }
+
+    document.onkeydown = function () {
+      if (!isPaused) {
+        return $.ajax({
+          url: "games/" + user + "/pause/" + currentLevel + "/" + currentLevelTime, method: "PUT", cache: false, success: function () {
+            window.clearInterval(currInterval);
+            // display a PAUSED overlay on screen
+            document.getElementById("gamePausedOverlay").style.visibility = "visible";
+            isPaused = true;
+            vm.send();
+          },
+          error: function (xhr, status, error) {
+            console.log("Error pausing game: ", error)
+          }
+        });
+      }
+      else {
+        return $.ajax({
+          url: "games/" + user + "/play/" + currentLevel + "/" + currentLevelTime, method: "PUT", cache: false, success: function () {
+            isPaused = false;
+            window.location.reload(true);
+          },
+          error: function (xhr, status, error) {
+            console.log("Error playing game: ", error)
+          }
+        })
+
+      }
+
+    };
+
 
     function startTimer(duration) {
       var start = performance.now(),
@@ -62,6 +102,7 @@
         // get the number of seconds that have elapsed since 
         // startTimer() was called
         diff = duration - (((performance.now() - start) / 1000) | 0);
+        currentLevelTime = duration - (((performance.now() - start) / 1000) | 0);
 
         // does the same job as parseInt truncates the float
         minutes = (diff / 60) | 0;
@@ -71,7 +112,6 @@
         seconds = seconds < 10 ? "0" + seconds : seconds;
 
         timerDisplay.textContent = minutes + ":" + seconds;
-
 
 
         if (diff < 6) {
@@ -120,7 +160,6 @@
 
     window.onload = function () {
 
-
       getGameData().then(setupGameVariables).then(displayInfo).then(function () {
 
         if (isPaused == true) {
@@ -138,16 +177,8 @@
           startTimer(currentLevelTime, timerDisplay);
         }
       })
-
       vm.join();
-      document.onkeydown = function () {
-        vm.send();
-      }
-      document.onmousedown = function () {
-        vm.send();
-      }
     };
-
 
     // adding the javascript required for socket connection
     var vm = new Vue({
@@ -217,43 +248,41 @@
 
   </script>
 
-
-
 </head>
 
 <body>
-    <page>
+  <page>
 
-      <controls>
-        <div>Level:
-          <span id="level"></span>
-        </div>
-        <div>
-          New Game
-        </div>
-      </controls>
+    <controls>
+      <div>Level:
+        <span id="level"></span>
+      </div>
+      <div>
+        New Game
+      </div>
+    </controls>
 
-      <timer id="time">
+    <timer id="time">
 
-      </timer>
+    </timer>
 
-      <currentBlindsAndAnte>
-        <blinds>Blinds:
-          <span id="blindValues"></span>
-        </blinds>
-        <ante>Ante:
-          <span id="anteValue"></span>
-        </ante>
-      </currentBlindsAndAnte>
+    <currentBlindsAndAnte>
+      <blinds>Blinds:
+        <span id="blindValues"></span>
+      </blinds>
+      <ante>Ante:
+        <span id="anteValue"></span>
+      </ante>
+    </currentBlindsAndAnte>
 
-      <branding>
-        <img src="img/emailtopia_logo-white-on-transparent.png" class="logo">
-      </branding>
+    <branding>
+      <img src="img/emailtopia_logo-white-on-transparent.png" class="logo">
+    </branding>
 
-      <div id="gamePausedOverlay">PAUSED</div>
-      <div id="dataErrorOverlay">Error Loading</div>
+    <div id="gamePausedOverlay">PAUSED</div>
+    <div id="dataErrorOverlay">Error Loading</div>
 
-    </page>
+  </page>
 </body>
 
 </html>

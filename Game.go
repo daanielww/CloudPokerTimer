@@ -69,19 +69,19 @@ func LoadExistingGame(email string, collection *mgo.Collection) (string, error) 
 
 func games(w http.ResponseWriter, r *http.Request) {
 
-	u := Email{}
+	/*u := Email{}
 
 	json.NewDecoder(r.Body).Decode(&u)
 
 	email := u.Email
 
-	fmt.Println(email)
+	fmt.Println(email) */
+
+	email := "Sam"
 
 	game := UserGame{}
 
 	err := db.C("gameInfo").Find(bson.M{"UserID": email}).One(&game)
-
-	fmt.Println("Games: ", err == nil)
 
 	if err == nil {
 		err := db.C("gameInfo").Remove(bson.M{"UserID": email})
@@ -91,7 +91,7 @@ func games(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	userGame := makeDummyData()
+	userGame := makeDummyData(email)
 
 	db.C("gameInfo").Insert(userGame)
 
@@ -107,12 +107,11 @@ func games(w http.ResponseWriter, r *http.Request) {
 }
 
 func existing(w http.ResponseWriter, r *http.Request) {
+
 	vars := mux.Vars(r)
 	email := vars["id"]
 
 	game := UserGame{}
-
-	fmt.Println("InExisting: ")
 
 	err := db.C("gameInfo").Find(bson.M{"User": email}).One(&game)
 	if err != nil {
@@ -146,9 +145,9 @@ func update(w http.ResponseWriter, r *http.Request) {
 	db.C("gameInfo").Update(bson.M{"User": game.User}, bson.M{"$set": bson.M{"Paused": u.Status}})
 }
 
-func makeDummyData() UserGame {
+func makeDummyData(email string) UserGame {
 
-	smallBlindArray := []int64{5, 10, 25, 50, 75, 100, 150, 200, 300, 400, 500, 700, 1000, 1500, 2000, 3000, }
+	smallBlindArray := []int64{5, 10, 25, 50, 75, 100, 150, 200, 300, 400, 500, 700, 1000, 1500, 2000, 3000}
 	bigBlindArray := []int64{10, 20, 50, 100, 150, 200, 300, 400, 600, 800, 1000, 1400, 2000, 3000, 4000, 6000}
 	anteArray := []int64{0, 0, 5, 10, 10, 25, 25, 25, 50, 50, 100, 100, 200, 300, 400, 600}
 	rows := []row{}
@@ -168,11 +167,11 @@ func makeDummyData() UserGame {
 	}
 
 	userGame := UserGame{
-		User:                      "Sam",
+		User:                      email,
 		StartTime:                 time.Now(),
 		Paused:                    false,
 		CurrentPausedStartTime:    time.Now(),
-		CurrentLevelTime:          30,
+		CurrentLevelTime:          420,
 		CurrentLevel:              1,
 		BlindScheduleName:         "Office Turbo",
 		Levels:                    rows,
