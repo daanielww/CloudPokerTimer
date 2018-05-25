@@ -87,10 +87,11 @@ func main() {
 	router.HandleFunc("/games/{id}", existing).Methods("GET")
 	//testing button click action 2 cases pause and play
 	router.HandleFunc("/games/{id}/pause", func(w http.ResponseWriter, r *http.Request) {
-		updateGamePauseState(true, getEmail(r))
+		updateGamePauseState(w,true, getEmail(r))
+
 	}).Methods("PUT")
 	router.HandleFunc("/games/{id}/play", func(w http.ResponseWriter, r *http.Request) {
-		updateGamePauseState(false, getEmail(r))
+		updateGamePauseState(w,false, getEmail(r))
 	}).Methods("PUT")
 
 	router.HandleFunc("/main", index).Methods("GET")

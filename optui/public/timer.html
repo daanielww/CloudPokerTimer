@@ -48,6 +48,35 @@
       });
     }
 
+    document.onkeydown = function () {
+        if(!isPaused) {
+            return $.ajax({
+                url: "games/Sam/pause", cache: false, success: function () {
+                    window.clearInterval(timeControl);
+                    // display a PAUSED overlay on screen
+                    document.getElementById("gamePausedOverlay").style.visibility = "visible";
+                    isPaused = true;
+                },
+                error: function (xhr, status, error) {
+                    console.log("Error pausing game: ", error)
+                }
+            });
+        }
+        else {
+            return $.ajax({
+                url: "games/Sam/play", cache: false, success: function () {
+                    window.location.reload(true);
+                },
+                error: function(xhr, status, error) {
+                    console.log("Error playing game: ", error)
+                }
+            })
+
+        }
+
+    };
+
+
     function startTimer(duration) {
       var start = performance.now(),
         diff,
@@ -72,13 +101,6 @@
 
         timerDisplay.textContent = minutes + ":" + seconds;
 
-        document.addEventListener("keypress", function () {
-          clearInterval(currInterval);
-          document.addEventListener("keypress", function () {
-            window.location.reload(true);
-          })
-
-        });
 
         if (diff < 6) {
           countDownSound.play();
