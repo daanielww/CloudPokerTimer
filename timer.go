@@ -11,7 +11,6 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
-//Runs asychronously as a goroutine. levelTimeRemaining and currentLevel are channels to return the values back to the caller.
 //Currently requires four game related values in order to calculate levelTimeRemaining and currentLevel.
 //Once the data format of the Game struct has been established, consider passing in the single struct instead.
 func GetLevelAndLevelTime(startTime time.Time, accumulatedPauseDuration time.Duration, paused bool,
