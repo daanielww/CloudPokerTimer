@@ -150,6 +150,7 @@ func makeDummyData(email string) UserGame {
 	smallBlindArray := []int64{5, 10, 25, 50, 75, 100, 150, 200, 300, 400, 500, 700, 1000, 1500, 2000, 3000}
 	bigBlindArray := []int64{10, 20, 50, 100, 150, 200, 300, 400, 600, 800, 1000, 1400, 2000, 3000, 4000, 6000}
 	anteArray := []int64{0, 0, 5, 10, 10, 25, 25, 25, 50, 50, 100, 100, 200, 300, 400, 600}
+	durationArray := []int64{420, 420, 420, 420, 420, 420, 420, 420, 420, 420, 420, 420, 420, 420, 420, 420}
 	rows := []row{}
 	rowOb := row{}
 
@@ -160,7 +161,7 @@ func makeDummyData(email string) UserGame {
 			BigBlind:   bigBlindArray[i],
 			Ante:       anteArray[i],
 			Level:      int64(i + 1),
-			Duration:   int64(420),
+			Duration:   durationArray[i],
 		}
 
 		rows = append(rows, rowOb)
